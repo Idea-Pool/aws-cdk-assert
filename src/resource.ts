@@ -5,8 +5,14 @@ import { Dict, ResourceTypes } from "./types";
 
 export class Resource {
   protected config: Dict;
+  protected key: string;
 
   constructor(private type: ResourceTypes, protected template: AdvancedTemplate, protected props: any) {
+  }
+
+  public withPartialKey(key: string): Resource {
+    this.key = key;
+    return this;
   }
 
   protected setProperty(key: string, value: any): Resource {
@@ -27,7 +33,15 @@ export class Resource {
   }
 
   public find(): KeyAndProps {
-    return this.template.findResources(this.type, this.config);
+    const resources = this.template.findResources(this.type, this.config);
+    if (this.key) {
+      for (const key in resources) {
+        if (!key.toLowerCase().includes(this.key.toLowerCase())) {
+          delete resources[key];
+        }
+      }
+    }
+    return resources;
   }
 
   public findSimilarType(): KeyAndProps {
