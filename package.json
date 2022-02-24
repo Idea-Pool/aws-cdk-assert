@@ -18,7 +18,7 @@
     "type": "git",
     "url": "git+https://github.com/szikszail/aws-cdk-assert.git"
   },
-  "keywords": [],
+  "keywords": ["aws", "cdk", "assert"],
   "author": "Laszlo Szikszai <sziklaszlo@gmail.com>",
   "license": "MIT",
   "files": [
