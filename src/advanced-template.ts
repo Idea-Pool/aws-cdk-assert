@@ -4,6 +4,7 @@ import { CloudFrontDistribution } from "./cloudfront";
 import { S3Bucket, S3BucketPolicy } from "./s3";
 import { Route53RecordSet } from "./route53";
 import { Dict, KeyAndProps } from "./types";
+import { SSMParameter, WafV2WebACL } from ".";
 
 export class AdvancedTemplate {
   constructor(private template: Template, public region?: string) { }
@@ -90,5 +91,13 @@ export class AdvancedTemplate {
 
   public route53RecordSet(props?: any): Route53RecordSet {
     return new Route53RecordSet(this, props);
+  }
+
+  public ssmParameter(props?: any): SSMParameter {
+    return new SSMParameter(this, props);
+  }
+
+  public wafV2WebACL(props?: any): WafV2WebACL {
+    return new WafV2WebACL(this, props);
   }
 }
