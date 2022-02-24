@@ -4,4 +4,4 @@
 
 ### Added
 
-- Implemented npm-package
+- Added placeholder of aws-cdk-assert

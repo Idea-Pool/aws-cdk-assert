@@ -1,6 +1,6 @@
 import { noop } from "../src";
 
-describe("npm-package", () => {
+describe("aws-cdk-assert", () => {
   test("should do noop", () => {
     noop();
   });
