@@ -1,7 +1,7 @@
 import { Match } from "aws-cdk-lib/assertions";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
-import { Resource } from "./resource-assert";
+import { Resource } from "./resource";
 import { ResourceTypes } from "./types";
 
 export class S3BucketPolicy extends Resource {

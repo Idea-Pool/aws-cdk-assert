@@ -1,5 +1,5 @@
 import { Match, Matcher } from "aws-cdk-lib/assertions";
-import { Resource } from "./resource-assert";
+import { Resource } from "./resource";
 import { S3Bucket } from "./s3";
 
 export class AdvancedMatcher {

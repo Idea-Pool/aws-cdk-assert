@@ -33,7 +33,7 @@ export class Resource {
     return this.template.findResources(this.type);
   }
 
-  private get definition(): any {
+  protected get definition(): any {
     const resources = this.find();
     const ids = Object.keys(resources);
 
