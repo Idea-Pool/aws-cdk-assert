@@ -1,4 +1,5 @@
 import assert = require("assert");
+import { KeyAndProps } from ".";
 import { AdvancedTemplate } from "./advanced-template";
 import { Dict, ResourceTypes } from "./types";
 
@@ -25,11 +26,11 @@ export class Resource {
     return this;
   }
 
-  public find() {
+  public find(): KeyAndProps {
     return this.template.findResources(this.type, this.config);
   }
 
-  public findSimilarType() {
+  public findSimilarType(): KeyAndProps {
     return this.template.findResources(this.type);
   }
 
@@ -49,17 +50,17 @@ export class Resource {
     return this.definition.Id;
   }
 
-  public doesNotExist() {
+  public doesNotExist(): void {
     const resources = this.find();
     this.assert(Object.keys(resources).length === 0, 'Resource exists!');
   }
 
-  public exists() {
+  public exists(): void {
     const resources = this.find();
     this.assert(Object.keys(resources).length > 0, 'Resource does not exist!');
   }
 
-  public countIs(count: number) {
+  public countIs(count: number): void {
     this.template.resourceCountIs(this.type, count);
   }
 
@@ -74,7 +75,15 @@ export class Resource {
     }, null, 2)
   }
 
-  public assert(condition: boolean, message: string) {
+  public assert(condition: boolean, message: string): void {
     assert(condition, message + '\nInfo: ' + this.toDebugString());
+  }
+
+  public hasTag(key: string, value?: string): Resource {
+    const tag = this.definition.Properties?.Tags.find((tag: any): boolean => {
+      return tag.Key === key && (!value || tag.Value === value);
+    });
+    this.assert(tag, `There is no such tag like ${key}${value ? ':' + value : ''}`);
+    return this;
   }
 }
