@@ -1,13 +1,15 @@
 import assert = require("assert");
-import { KeyAndProps } from ".";
+import { Match } from "aws-cdk-lib/assertions";
 import { AdvancedTemplate } from "./advanced-template";
-import { Dict, ResourceTypes } from "./types";
+import { Dict, ResourceTypes, KeyAndProps } from "./types";
 
 export class Resource {
   protected config: Dict;
   protected key: string;
+  protected dependencyKeys: string[];
 
   constructor(private type: ResourceTypes, protected template: AdvancedTemplate, protected props: any) {
+    this.dependencyKeys = [];
   }
 
   public withPartialKey(key: string): Resource {
@@ -98,6 +100,12 @@ export class Resource {
       return tag.Key === key && (!value || tag.Value === value);
     });
     this.assert(tag, `There is no such tag like ${key}${value ? ':' + value : ''}`);
+    return this;
+  }
+
+  public dependsOn(resource: Resource): Resource {
+    this.dependencyKeys.push(resource.id);
+    this.setRootProperty('DependsOn', Match.arrayWith(this.dependencyKeys));
     return this;
   }
 }
