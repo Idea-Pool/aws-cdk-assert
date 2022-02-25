@@ -28,10 +28,12 @@ export class CodeBuildSourceCredentials extends Resource {
 
 export class CodeBuildProject extends Resource {
   private environmentVariables: any[];
+  private source: any;
 
   constructor(template: AdvancedTemplate, props?: any) {
     super(ResourceTypes.CODE_BUILD_PROJECT, template, props);
     this.environmentVariables = [];
+    this.source = {};
   }
 
   public withServiceRole(resource: Resource): CodeBuildProject {
@@ -39,10 +41,11 @@ export class CodeBuildProject extends Resource {
   }
 
   public withSource(type: string, location: string): CodeBuildProject {
-    return this.setProperty('Source', Match.objectLike({
-      Location: Match.stringLikeRegexp(location),
-      Type: type,
-    })) as CodeBuildProject;
+    this.source = this.source || {};
+    this.source.Location = Match.stringLikeRegexp(location);
+    this.source.Type = type;
+
+    return this.setProperty('Source', Match.objectLike(this.source)) as CodeBuildProject;
   }
 
   public withEnvironmentVariable(name: string, value?: any, type?: string): CodeBuildProject {
@@ -101,5 +104,12 @@ export class CodeBuildProject extends Resource {
       }
     }
     return this.setProperty('Artifacts', Match.objectLike(artifact)) as CodeBuildProject;
+  }
+
+  public withBuildSpec(command: string): CodeBuildProject {
+    this.source = this.source || {};
+    this.source.BuildSpec = Match.stringLikeRegexp(command);
+
+    return this.setProperty('Source', Match.objectLike(this.source)) as CodeBuildProject;
   }
 }
