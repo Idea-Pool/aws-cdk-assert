@@ -7,7 +7,7 @@ import { ResourceTypes } from "./types";
 
 export class CloudFrontDistribution extends Resource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.CLOUDFRONT_DISTRIBUTION, template, props);
+    super(ResourceTypes.CLOUD_FRONT_DISTRIBUTION, template, props);
     this.setProperty('DistributionConfig', {});
   }
 
@@ -52,7 +52,7 @@ export class CloudFrontDistribution extends Resource {
 
 export class CloudFrontFunction extends Resource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.CLOUDFRONT_FUNCTION, template, props);
+    super(ResourceTypes.CLOUD_FRONT_FUNCTION, template, props);
   }
 
   public withCode(code: string): CloudFrontFunction {

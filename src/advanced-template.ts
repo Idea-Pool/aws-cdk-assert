@@ -5,7 +5,7 @@ import { S3Bucket, S3BucketPolicy } from "./s3";
 import { Route53RecordSet } from "./route53";
 import { Dict, KeyAndProps } from "./types";
 import { CloudFormationCustomResource } from "./cloudformation";
-import { CodeBuildProject } from "./codebuild";
+import { CodeBuildProject, CodeBuildSourceCredentials } from "./codebuild";
 import { CustomResource } from "./custom";
 import { SSMParameter } from "./ssm";
 import { WafV2WebACL } from "./wafv2";
@@ -83,6 +83,10 @@ export class AdvancedTemplate {
     return this.template.toJSON();
   }
 
+  public debug(): void {
+    console.log(JSON.stringify(this.toJSON(), null, 2));
+  }
+
   public cloudFormationCustomResource(props?: any): CloudFormationCustomResource {
     return new CloudFormationCustomResource(this, props);
   }
@@ -97,6 +101,10 @@ export class AdvancedTemplate {
 
   public codeBuildProject(props?: any): CodeBuildProject {
     return new CodeBuildProject(this, props);
+  }
+
+  public codeBuildSourceCredentials(props?: any): CodeBuildSourceCredentials {
+    return new CodeBuildSourceCredentials(this, props);
   }
 
   public customResource(props?: any): CustomResource {

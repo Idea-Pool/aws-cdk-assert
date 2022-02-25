@@ -9,6 +9,23 @@ export interface CodeBuildProjectTriggerEvent {
   pattern?: string;
 }
 
+export class CodeBuildSourceCredentials extends Resource {
+  constructor(template: AdvancedTemplate, props?: any) {
+    super(ResourceTypes.CODE_BUILD_SOURCE_CREDENTIALS, template, props);
+  }
+
+  public withCredentials(authType: string, serverType: string, token: string): CodeBuildSourceCredentials {
+    this.setProperty('AuthType', authType);
+    this.setProperty('ServerType', serverType);
+    this.setProperty('Token', Match.stringLikeRegexp(token));
+    return this;
+  }
+
+  public withGitHubPersonalAccessToken(token: string): CodeBuildSourceCredentials {
+    return this.withCredentials('PERSONAL_ACCESS_TOKEN', 'GITHUB', token);
+  }
+}
+
 export class CodeBuildProject extends Resource {
   private environmentVariables: any[];
 

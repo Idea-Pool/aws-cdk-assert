@@ -7,8 +7,8 @@ export enum ResourceTypes {
   S3_BUCKET_POLICY = 'AWS::S3::BucketPolicy',
   S3_AUTO_DELETE_OBJECTS = 'Custom::S3AutoDeleteObjects',
 
-  CLOUDFRONT_DISTRIBUTION = 'AWS::CloudFront::Distribution',
-  CLOUDFRONT_FUNCTION = 'AWS::CloudFront::Function',
+  CLOUD_FRONT_DISTRIBUTION = 'AWS::CloudFront::Distribution',
+  CLOUD_FRONT_FUNCTION = 'AWS::CloudFront::Function',
 
   ROUTE53_RECORD_SET = 'AWS::Route53::RecordSet',
 
@@ -16,6 +16,7 @@ export enum ResourceTypes {
   IAM_POLICY = 'AWS::IAM::Policy',
 
   CODE_BUILD_PROJECT = 'AWS::CodeBuild::Project',
+  CODE_BUILD_SOURCE_CREDENTIALS = 'AWS::CodeBuild::SourceCredential',
 
   CDK_METADATA = 'AWS::CDK::Metadata',
 
