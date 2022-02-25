@@ -4,6 +4,7 @@ export * from './cloudformation';
 export * from './cloudfront';
 export * from './codebuild';
 export * from './custom';
+export * from './dynamodb';
 export * from './iam';
 export * from './lambda';
 export * from './resource';

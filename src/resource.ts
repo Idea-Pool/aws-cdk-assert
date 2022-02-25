@@ -1,4 +1,5 @@
 import assert = require("assert");
+import { RemovalPolicy } from "aws-cdk-lib";
 import { Match } from "aws-cdk-lib/assertions";
 import { AdvancedTemplate } from "./advanced-template";
 import { Dict, ResourceTypes, KeyAndProps } from "./types";
@@ -74,18 +75,21 @@ export class Resource {
     return this.definition.Id;
   }
 
-  public doesNotExist(): void {
+  public count(): number {
     const resources = this.find();
-    this.assert(Object.keys(resources).length === 0, 'Resource exists!');
+    return Object.keys(resources).length;
+  }
+
+  public doesNotExist(): void {
+    this.assert(this.count() === 0, 'Resource exists!');
   }
 
   public exists(): void {
-    const resources = this.find();
-    this.assert(Object.keys(resources).length > 0, 'Resource does not exist!');
+    this.assert(this.count() > 0, 'Resource does not exist!');
   }
 
   public countIs(count: number): void {
-    this.template.resourceCountIs(this.type, count);
+    this.assert(this.count() === count, 'Resource cound does not match!');
   }
 
   public toJSON(): any {
@@ -114,6 +118,26 @@ export class Resource {
   public dependsOn(resource: Resource): Resource {
     this.dependencyKeys.push(resource.id);
     this.setRootProperty('DependsOn', Match.arrayWith(this.dependencyKeys));
+    return this;
+  }
+}
+
+export class RemovableResource extends Resource {
+  private static mapRemovalPolicy(policy: RemovalPolicy): string {
+    switch (policy) {
+      case RemovalPolicy.RETAIN:
+        return "Retain";
+      case RemovalPolicy.SNAPSHOT:
+        return "Snapshot";
+      default:
+        return "Delete";
+    }
+  }
+
+  public withRemovalPolicy(policy: RemovalPolicy) {
+    const operation = RemovableResource.mapRemovalPolicy(policy);
+    this.setRootProperty('DeletionPolicy', Match.stringLikeRegexp(operation));
+    this.setRootProperty('UpdateReplacePolicy', Match.stringLikeRegexp(operation));
     return this;
   }
 }

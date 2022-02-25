@@ -1,7 +1,7 @@
 import { Match } from "aws-cdk-lib/assertions";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
-import { Resource } from "./resource";
+import { RemovableResource, Resource } from "./resource";
 import { ResourceTypes } from "./types";
 
 export class S3BucketPolicy extends Resource {
@@ -36,7 +36,7 @@ export class S3BucketPolicy extends Resource {
   }
 }
 
-export class S3Bucket extends Resource {
+export class S3Bucket extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
     super(ResourceTypes.S3_BUCKET, template, props);
   }
@@ -56,35 +56,36 @@ export class S3Bucket extends Resource {
       options.redirectTo
         ? {
           RedirectAllRequestsTo: {
-            HostName: options.redirectTo,
-            Protocol: options.redirectProtocol || 'https',
+            HostName: Match.stringLikeRegexp(options.redirectTo),
+            Protocol: Match.stringLikeRegexp(options.redirectProtocol || 'https'),
           }
         }
         : {
-          IndexDocument: options.indexDocument || 'index.html',
+          IndexDocument: Match.stringLikeRegexp(options.indexDocument || 'index.html'),
+          ErrorDocument: Match.stringLikeRegexp(options.errorDocument || 'index.html'),
         }
     ) as S3Bucket;
   }
 
   public withCorsEnabled(options: {
-    methods?: string[],
-    origins?: string[],
+    methods?: string | string[],
+    origins?: string | string[],
   } = {}): S3Bucket {
     return this.setProperty(
       'CorsConfiguration',
       {
         CorsRules: Match.arrayWith([
           Match.objectEquals({
-            AllowedMethods: Match.arrayEquals(options.methods || ["GET"]),
-            AllowedOrigins: Match.arrayEquals(options.origins || ["*"]),
+            AllowedMethods: Array.isArray(options.methods)
+              ? Match.arrayEquals(options.methods)
+              : Match.arrayWith([options.methods || "GET"]),
+            AllowedOrigins: Array.isArray(options.origins)
+              ? Match.arrayEquals(options.origins)
+              : Match.arrayWith([options.origins || "*"]),
           })
         ])
       }
     ) as S3Bucket;
-  }
-
-  public withDeletePolicy(policy = "Delete") {
-    return this.setRootProperty('DeletionPolicy', policy) as S3Bucket;
   }
 
   // TODO: withAutoDeleteObjects

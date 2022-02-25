@@ -7,6 +7,7 @@ import { Dict, KeyAndProps } from "./types";
 import { CloudFormationCustomResource } from "./cloudformation";
 import { CodeBuildProject, CodeBuildSourceCredentials } from "./codebuild";
 import { CustomResource } from "./custom";
+import { DynamoDBTable } from "./dynamodb";
 import { SSMParameter } from "./ssm";
 import { WafV2WebACL } from "./wafv2";
 import { IAMPolicy, IAMRole } from "./iam";
@@ -109,6 +110,10 @@ export class AdvancedTemplate {
 
   public customResource(props?: any): CustomResource {
     return new CustomResource(this, props);
+  }
+
+  public dynamoDBTable(props?: any): DynamoDBTable {
+    return new DynamoDBTable(this, props);
   }
 
   public iamRole(props?: any): IAMRole {
