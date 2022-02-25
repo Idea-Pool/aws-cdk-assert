@@ -1,4 +1,5 @@
 import { Match } from "aws-cdk-lib/assertions";
+import { WafV2WebACL } from ".";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { Resource } from "./resource";
@@ -17,14 +18,27 @@ export class CloudFrontDistribution extends Resource {
   }
 
   public withFunctionAssociation(fn: CloudFrontFunction, eventType?: string): CloudFrontDistribution {
-    return this.setProperty('DefaultCacheBehavior', Match.objectLike({
+    this.props.DistributionConfig.DefaultCacheBehavior = Match.objectLike({
       FunctionAssociations: Match.arrayWith([
         Match.objectLike({
           EventType: eventType || "viewer-request",
           FunctionARN: AdvancedMatcher.arn(fn, "FunctionARN"),
         })
       ])
-    })) as CloudFrontDistribution;
+    });
+    return this;
+  }
+
+  public withCertificate(requestorResource: Resource): CloudFrontDistribution {
+    this.props.DistributionConfig.ViewerCertificate = Match.objectLike({
+      AcmCertificateArn: AdvancedMatcher.arn(requestorResource),
+    });
+    return this;
+  }
+
+  public withWebACL(acl: WafV2WebACL): CloudFrontDistribution {
+    this.props.DistributionConfig.WebACLId = AdvancedMatcher.fnGetAtt(acl, "Parameter.Value");
+    return this;
   }
 
   public withS3BucketOrigin(s3Bucket: S3Bucket): CloudFrontDistribution {
