@@ -4,7 +4,7 @@ import { CloudFrontDistribution } from "./cloudfront";
 import { S3Bucket, S3BucketPolicy } from "./s3";
 import { Route53RecordSet } from "./route53";
 import { Dict, KeyAndProps } from "./types";
-import { SSMParameter, WafV2WebACL } from ".";
+import { IAMPolicy, IAMRole, LambdaFunction, SSMParameter, WafV2WebACL } from ".";
 
 export class AdvancedTemplate {
   constructor(private template: Template, public region?: string) { }
@@ -99,5 +99,17 @@ export class AdvancedTemplate {
 
   public wafV2WebACL(props?: any): WafV2WebACL {
     return new WafV2WebACL(this, props);
+  }
+
+  public iamRole(props?: any): IAMRole {
+    return new IAMRole(this, props);
+  }
+
+  public iamPolicy(props?: any): IAMPolicy {
+    return new IAMPolicy(this, props);
+  }
+
+  public lambdaFunction(props?: any): LambdaFunction {
+    return new LambdaFunction(this, props);
   }
 }
