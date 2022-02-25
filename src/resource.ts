@@ -26,12 +26,20 @@ export class Resource {
     return this;
   }
 
+  public withProperty(key: string, value: any): Resource {
+    return this.setProperty(key, value);
+  }
+
   protected setRootProperty(key: string, value: any): Resource {
     if (!this.config) {
       this.config = {};
     }
     this.config[key] = value;
     return this;
+  }
+
+  public withRootProperty(key: string, value: any): Resource {
+    return this.setRootProperty(key, value);
   }
 
   public find(): KeyAndProps {

@@ -4,7 +4,13 @@ import { CloudFrontDistribution } from "./cloudfront";
 import { S3Bucket, S3BucketPolicy } from "./s3";
 import { Route53RecordSet } from "./route53";
 import { Dict, KeyAndProps } from "./types";
-import { IAMPolicy, IAMRole, LambdaFunction, SSMParameter, WafV2WebACL } from ".";
+import { CloudFormationCustomResource } from "./cloudformation";
+import { CodeBuildProject } from "./codebuild";
+import { CustomResource } from "./custom";
+import { SSMParameter } from "./ssm";
+import { WafV2WebACL } from "./wafv2";
+import { IAMPolicy, IAMRole } from "./iam";
+import { LambdaFunction } from "./lambda";
 
 export class AdvancedTemplate {
   constructor(private template: Template, public region?: string) { }
@@ -77,28 +83,20 @@ export class AdvancedTemplate {
     return this.template.toJSON();
   }
 
-  public s3Bucket(props?: any): S3Bucket {
-    return new S3Bucket(this, props);
-  }
-
-  public s3BucketPolicy(props?: any): S3BucketPolicy {
-    return new S3BucketPolicy(this, props);
+  public cloudFormationCustomResource(props?: any): CloudFormationCustomResource {
+    return new CloudFormationCustomResource(this, props);
   }
 
   public cloudFrontDistribution(props?: any): CloudFrontDistribution {
     return new CloudFrontDistribution(this, props);
   }
 
-  public route53RecordSet(props?: any): Route53RecordSet {
-    return new Route53RecordSet(this, props);
+  public codeBuildProject(props?: any): CodeBuildProject {
+    return new CodeBuildProject(this, props);
   }
 
-  public ssmParameter(props?: any): SSMParameter {
-    return new SSMParameter(this, props);
-  }
-
-  public wafV2WebACL(props?: any): WafV2WebACL {
-    return new WafV2WebACL(this, props);
+  public customResource(props?: any): CustomResource {
+    return new CustomResource(this, props);
   }
 
   public iamRole(props?: any): IAMRole {
@@ -111,5 +109,25 @@ export class AdvancedTemplate {
 
   public lambdaFunction(props?: any): LambdaFunction {
     return new LambdaFunction(this, props);
+  }
+
+  public route53RecordSet(props?: any): Route53RecordSet {
+    return new Route53RecordSet(this, props);
+  }
+
+  public s3Bucket(props?: any): S3Bucket {
+    return new S3Bucket(this, props);
+  }
+
+  public s3BucketPolicy(props?: any): S3BucketPolicy {
+    return new S3BucketPolicy(this, props);
+  }
+
+  public ssmParameter(props?: any): SSMParameter {
+    return new SSMParameter(this, props);
+  }
+
+  public wafV2WebACL(props?: any): WafV2WebACL {
+    return new WafV2WebACL(this, props);
   }
 }

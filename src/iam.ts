@@ -25,6 +25,10 @@ export class IAMRole extends Resource {
     return this.assumableBy({ Service: 'lambda.amazonaws.com' });
   }
 
+  public assumableByCodeBuild(): IAMRole {
+    return this.assumableBy({ Service: 'codebuild.amazonaws.com' });
+  }
+
   public withManagedRolicy(policy: string): IAMRole {
     return this.setProperty('ManagedPolicyArns', Match.arrayWith([
       AdvancedMatcher.fnJoin(Match.arrayWith([
