@@ -36,8 +36,8 @@ export class CloudFrontDistribution extends Resource {
     return this;
   }
 
-  public withWebACL(acl: WafV2WebACL): CloudFrontDistribution {
-    this.props.DistributionConfig.WebACLId = AdvancedMatcher.fnGetAtt(acl, "Parameter.Value");
+  public withWebACL(webACLId: any): CloudFrontDistribution {
+    this.props.DistributionConfig.WebACLId = webACLId;
     return this;
   }
 
