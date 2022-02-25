@@ -1,6 +1,6 @@
 import { Stack } from "aws-cdk-lib";
 import { Template } from "aws-cdk-lib/assertions";
-import { CloudFrontDistribution } from "./cloudfront";
+import { CloudFrontDistribution, CloudFrontFunction } from "./cloudfront";
 import { S3Bucket, S3BucketPolicy } from "./s3";
 import { Route53RecordSet } from "./route53";
 import { Dict, KeyAndProps } from "./types";
@@ -89,6 +89,10 @@ export class AdvancedTemplate {
 
   public cloudFrontDistribution(props?: any): CloudFrontDistribution {
     return new CloudFrontDistribution(this, props);
+  }
+
+  public cloudFrontFunction(props?: any): CloudFrontFunction {
+    return new CloudFrontFunction(this, props);
   }
 
   public codeBuildProject(props?: any): CodeBuildProject {

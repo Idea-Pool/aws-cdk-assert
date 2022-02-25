@@ -8,6 +8,7 @@ export enum ResourceTypes {
   S3_AUTO_DELETE_OBJECTS = 'Custom::S3AutoDeleteObjects',
 
   CLOUDFRONT_DISTRIBUTION = 'AWS::CloudFront::Distribution',
+  CLOUDFRONT_FUNCTION = 'AWS::CloudFront::Function',
 
   ROUTE53_RECORD_SET = 'AWS::Route53::RecordSet',
 

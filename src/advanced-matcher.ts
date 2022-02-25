@@ -33,7 +33,7 @@ export class AdvancedMatcher {
     );
   }
 
-  public static arn(resource: Resource): Matcher {
-    return this.fnGetAtt(resource.id, "Arn")
+  public static arn(resource: Resource, attribute?: string): Matcher {
+    return this.fnGetAtt(resource.id, attribute || "Arn")
   }
 }

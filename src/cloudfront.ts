@@ -16,6 +16,17 @@ export class CloudFrontDistribution extends Resource {
     return this;
   }
 
+  public withFunctionAssociation(fn: CloudFrontFunction, eventType?: string): CloudFrontDistribution {
+    return this.setProperty('DefaultCacheBehavior', Match.objectLike({
+      FunctionAssociations: Match.arrayWith([
+        Match.objectLike({
+          EventType: eventType || "viewer-request",
+          FunctionARN: AdvancedMatcher.arn(fn, "FunctionARN"),
+        })
+      ])
+    })) as CloudFrontDistribution;
+  }
+
   public withS3BucketOrigin(s3Bucket: S3Bucket): CloudFrontDistribution {
     this.props.DistributionConfig.Origins = [
       Match.objectLike({
@@ -23,5 +34,15 @@ export class CloudFrontDistribution extends Resource {
       })
     ];
     return this;
+  }
+}
+
+export class CloudFrontFunction extends Resource {
+  constructor(template: AdvancedTemplate, props?: any) {
+    super(ResourceTypes.CLOUDFRONT_FUNCTION, template, props);
+  }
+
+  public withCode(code: string): CloudFrontFunction {
+    return this.setProperty('FunctionCode', Match.stringLikeRegexp(code)) as CloudFrontFunction;
   }
 }
