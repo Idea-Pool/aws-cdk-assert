@@ -1,5 +1,4 @@
 import { Match } from "aws-cdk-lib/assertions";
-import { WafV2WebACL } from ".";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { Resource } from "./resource";
