@@ -1,6 +1,7 @@
 import { App } from "aws-cdk-lib";
 import { Match } from "aws-cdk-lib/assertions";
-import { AdvancedMatcher, AdvancedTemplate, DynamoDBTable, IAMPolicyStatementEffect, IAMRole, LambdaFunction } from "../src"
+import { Effect } from "aws-cdk-lib/aws-iam";
+import { AdvancedMatcher, AdvancedTemplate, DynamoDBTable, IAMRole, LambdaFunction } from "../src"
 import { TestIAMStack } from "./stacks/iam.stack";
 
 
@@ -19,7 +20,7 @@ describe("IAM", () => {
     });
     template = AdvancedTemplate.fromStack(stack);
 
-    // template.debug();
+    template.debug();
 
     roleForLambda = template
       .iamRole()
@@ -60,7 +61,7 @@ describe("IAM", () => {
       .withStatement(
         'lambda:InvokeFunction',
         AdvancedMatcher.arn(fn),
-        IAMPolicyStatementEffect.ALLOW
+        Effect.ALLOW
       )
       .withStatement(
         ['dynamodb:Query', 'dynamodb:PutItem'],

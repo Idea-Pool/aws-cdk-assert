@@ -1,78 +1,145 @@
 import { Match } from "aws-cdk-lib/assertions";
+import { BuildEnvironmentVariableType, CfnProject, CfnSourceCredential } from "aws-cdk-lib/aws-codebuild";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
-import { Resource } from "./resource";
-import { ResourceTypes } from "./types";
+import { Resource, RemovableResource } from "./resource";
 
 export interface CodeBuildProjectTriggerEvent {
   type: string;
   pattern?: string;
 }
 
-export class CodeBuildSourceCredentials extends Resource {
+export enum CredentialAuthType {
+  OAUTH = 'OAUTH',
+  BASIC_AUTH = 'BASIC_AUTH',
+  PERSONAL_ACCESS_TOKEN = 'PERSONAL_ACCESS_TOKEN'
+}
+
+export enum CrednetialServerType {
+  GITHUB = 'GITHUB',
+  GITHUB_ENTERPRISE = 'GITHUB_ENTERPRISE',
+  BITBUCKET = 'BITBUCKET',
+}
+
+/**
+ * A test construct for CloudBuild Source Credentials resource
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.CfnSourceCredential.html}
+ */
+export class CodeBuildSourceCredentials extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.CODE_BUILD_SOURCE_CREDENTIALS, template, props);
+    super(CfnSourceCredential.CFN_RESOURCE_TYPE_NAME, template, props);
   }
 
-  public withCredentials(authType: string, serverType: string, token: string): CodeBuildSourceCredentials {
+  /**
+   * Sets matching credential properties for the source credentials
+   * @param authType The authentication type (exact match)
+   * @param serverType The server type (exact match)
+   * @param token The token (partial match)
+   * @returns 
+   */
+  public withCredentials(authType: CredentialAuthType, serverType: CrednetialServerType, token: string) {
     this.setProperty('AuthType', authType);
     this.setProperty('ServerType', serverType);
     this.setProperty('Token', Match.stringLikeRegexp(token));
     return this;
   }
 
-  public withGitHubPersonalAccessToken(token: string): CodeBuildSourceCredentials {
-    return this.withCredentials('PERSONAL_ACCESS_TOKEN', 'GITHUB', token);
+  /**
+   * Sets matching credentials for GitHub
+   * @param token The GitHub access token
+   * @returns 
+   */
+  public withGitHubPersonalAccessToken(token: string) {
+    return this.withCredentials(CredentialAuthType.PERSONAL_ACCESS_TOKEN, CrednetialServerType.GITHUB, token);
   }
 }
 
-export class CodeBuildProject extends Resource {
+/**
+ * A test construct for a CodeBuild Project resource
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.Project.html}
+ */
+export class CodeBuildProject extends RemovableResource {
   private environmentVariables: any[];
   private source: any;
 
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.CODE_BUILD_PROJECT, template, props);
+    super(CfnProject.CFN_RESOURCE_TYPE_NAME, template, props);
     this.environmentVariables = [];
     this.source = {};
   }
 
-  public withServiceRole(resource: Resource): CodeBuildProject {
-    return this.setProperty('ServiceRole', AdvancedMatcher.arn(resource)) as CodeBuildProject;
+  /**
+   * Sets a matching Service Role to another test construct resource
+   * @param resource The test construct resource to set
+   * @returns 
+   */
+  public withServiceRole(resource: Resource) {
+    this.setProperty('ServiceRole', AdvancedMatcher.arn(resource));
+    return this;
   }
 
-  public withSource(type: string, location: string): CodeBuildProject {
+  /**
+   * Sets a matching source for the project
+   * @param type The source type to match (exact match)
+   * @param location The whole or a partial location
+   * @returns 
+   */
+  public withSource(type: string, location: string) {
     this.source = this.source || {};
     this.source.Location = Match.stringLikeRegexp(location);
     this.source.Type = type;
 
-    return this.setProperty('Source', Match.objectLike(this.source)) as CodeBuildProject;
+    this.setProperty('Source', Match.objectLike(this.source));
+    return this;
   }
 
-  public withEnvironmentVariable(name: string, value?: any, type?: string): CodeBuildProject {
+  /**
+   * Sets a matching environment variable for the project
+   * @param name The whole of a partial name of the environment variable
+   * @param value The value of the environment variable (resource, string, or a matcher)
+   * @param type The type of the environment variable
+   * @returns 
+   */
+  public withEnvironmentVariable(name: string, value?: any, type?: BuildEnvironmentVariableType) {
     const environmentVariable: any = {
-      Name: name,
-      Type: type || "PLAINTEXT",
+      Name: Match.stringLikeRegexp(name),
+      Type: type || BuildEnvironmentVariableType.PLAINTEXT,
     };
     if (value) {
       if (value instanceof Resource) {
         environmentVariable.Value = {
           Ref: value.id,
         };
+      } else if (typeof value === "string") {
+        environmentVariable.Value = Match.stringLikeRegexp(value);
       } else {
         environmentVariable.Value = value;
       }
     }
     this.environmentVariables.push(Match.objectLike(environmentVariable));
-    return this.setProperty('Environment', Match.objectLike({
+    this.setProperty('Environment', Match.objectLike({
       EnvironmentVariables: Match.arrayWith(this.environmentVariables),
-    })) as CodeBuildProject;
+    }));
+    return this;
   }
 
-  public withConcurrentBuildLimit(limit: number): CodeBuildProject {
-    return this.setProperty('ConcurrentBuildLimit', limit) as CodeBuildProject;
+  /**
+   * Sets a matching concurrent build limit
+   * @param limit The exact limit to match
+   * @returns 
+   */
+  public withConcurrentBuildLimit(limit: number) {
+    this.setProperty('ConcurrentBuildLimit', limit);
+    return this;
   }
 
-  public withTriggers(events: CodeBuildProjectTriggerEvent[], webhook = true): CodeBuildProject {
+  /**
+   * Sets a matching trigger for the project
+   * @param events The trigger events to match with
+   * @param webhook Whether a webhook is used for the trigger
+   * @returns 
+   */
+  public withTriggers(events: CodeBuildProjectTriggerEvent[], webhook = true) {
     const eventMatchers = events.map(e => {
       const filter: any = { Type: e.type };
       if (e.pattern) {
@@ -80,17 +147,26 @@ export class CodeBuildProject extends Resource {
       }
       return Match.objectLike(filter);
     });
-    return this.setProperty('Triggers', Match.objectLike({
+    this.setProperty('Triggers', Match.objectLike({
       Webhook: !!webhook,
       FilterGroups: Match.arrayWith([
         Match.arrayWith(eventMatchers)
       ])
-    })) as CodeBuildProject;
+    }));
+    return this;
   }
 
-  public withArtifact(type: string, location?: any, encription?: boolean, packaging?: boolean): CodeBuildProject {
+  /**
+   * Sets a matching artifact for the project
+   * @param type The type of the artifact (e.g., S3)
+   * @param location The location of the artifact (resource, string, or a matcher)
+   * @param encryption Whether encryption is enabled for the artifact
+   * @param packaging Whether packaging is enabled for the artifact
+   * @returns 
+   */
+  public withArtifact(type: string, location?: any, encryption?: boolean, packaging?: boolean) {
     const artifact: any = {
-      EncryptionDisabled: !encription,
+      EncryptionDisabled: !encryption,
       Type: type || "S3",
       Packaging: packaging || "NONE",
     };
@@ -99,17 +175,26 @@ export class CodeBuildProject extends Resource {
         artifact.Location = {
           Ref: location.id,
         };
+      } else if (typeof location === "string") {
+        artifact.Location = Match.stringLikeRegexp(location);
       } else {
         artifact.Location = location;
       }
     }
-    return this.setProperty('Artifacts', Match.objectLike(artifact)) as CodeBuildProject;
+    this.setProperty('Artifacts', Match.objectLike(artifact));
+    return this;
   }
 
-  public withBuildSpec(command: string): CodeBuildProject {
+  /**
+   * Sets a matching build spec for the project
+   * @param command A partial build spec command
+   * @returns 
+   */
+  public withBuildSpec(command: string) {
     this.source = this.source || {};
     this.source.BuildSpec = Match.stringLikeRegexp(command);
 
-    return this.setProperty('Source', Match.objectLike(this.source)) as CodeBuildProject;
+    this.setProperty('Source', Match.objectLike(this.source));
+    return this;
   }
 }

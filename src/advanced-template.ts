@@ -190,6 +190,10 @@ export class AdvancedTemplate {
     console.log(JSON.stringify(this.toJSON(), null, 2));
   }
 
+  ////////////////////////////////////////////////////////////////////////////
+  // TEST CONSTRUCTS
+  ////////////////////////////////////////////////////////////////////////////
+
   /**
    * Creates a CloudFormation CustomResource test construct with the passed Properties.
    * @param props The Properties of the expected test construct.

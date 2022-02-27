@@ -1,15 +1,16 @@
 import { Match } from "aws-cdk-lib/assertions";
+import { CfnPolicy, CfnRole, Effect } from "aws-cdk-lib/aws-iam";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
-import { Resource } from "./resource";
-import { ResourceTypes } from "./types";
+import { RemovableResource } from "./resource";
 
 /**
  * A test construct represents an IAM Role.
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam.Role.html}
  */
-export class IAMRole extends Resource {
+export class IAMRole extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.IAM_ROLE, template, props);
+    super(CfnRole.CFN_RESOURCE_TYPE_NAME, template, props);
   }
 
   /**
@@ -19,8 +20,8 @@ export class IAMRole extends Resource {
    * iamRole.assumableBy({ Service: "lambda.amazonaws.com" })
    * @returns 
    */
-  public assumableBy(principal: any): IAMRole {
-    return this.setProperty('AssumeRolePolicyDocument', Match.objectLike({
+  public assumableBy(principal: any) {
+    this.setProperty('AssumeRolePolicyDocument', Match.objectLike({
       Statement: Match.arrayWith([
         {
           Action: 'sts:AssumeRole',
@@ -28,7 +29,8 @@ export class IAMRole extends Resource {
           Principal: principal,
         },
       ]),
-    })) as IAMRole;
+    }));
+    return this;
   }
 
   /**
@@ -36,7 +38,7 @@ export class IAMRole extends Resource {
    * @see {@link assumableBy}
    * @returns 
    */
-  public assumableByLambda(): IAMRole {
+  public assumableByLambda() {
     return this.assumableBy({ Service: 'lambda.amazonaws.com' });
   }
 
@@ -45,7 +47,7 @@ export class IAMRole extends Resource {
    * @see {@link assumableBy}
    * @returns 
    */
-  public assumableByCodeBuild(): IAMRole {
+  public assumableByCodeBuild() {
     return this.assumableBy({ Service: 'codebuild.amazonaws.com' });
   }
 
@@ -54,48 +56,64 @@ export class IAMRole extends Resource {
    * @param policy The managed policy name/ARN part.
    * @returns 
    */
-  public withManagedRolicy(policy: string): IAMRole {
-    return this.setProperty('ManagedPolicyArns', Match.arrayWith([
+  public withManagedRolicy(policy: string) {
+    this.setProperty('ManagedPolicyArns', Match.arrayWith([
       AdvancedMatcher.fnJoin(Match.arrayWith([
         Match.stringLikeRegexp(policy),
       ])),
-    ])) as IAMRole;
+    ]));
+    return this;
   }
 }
 
-export enum IAMPolicyStatementEffect {
-  ALLOW = 'Allow',
-  DENY = 'Deny',
-}
-
-export class IAMPolicy extends Resource {
+/**
+ * A test construct representing an IAM Policy.
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam.Policy.html}
+ */
+export class IAMPolicy extends RemovableResource {
+  /** @member The list of policy statements */
   private statements: any[];
+  /** @member The list of roles policy assigned to */
   private roles: any[];
 
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.IAM_POLICY, template, props);
+    super(CfnPolicy.CFN_RESOURCE_TYPE_NAME, template, props);
     this.statements = [];
     this.roles = [];
   }
 
-  public withStatement(action: string | string[], resource?: any, effect?: IAMPolicyStatementEffect): IAMPolicy {
+  /**
+   * Adds a matching policy statement
+   * @param action Either a single or an array of actions
+   * @param resource Either a matcher or a string representing the resource
+   * @param effect The matching effect of the policy statement
+   * @returns 
+   */
+  public withStatement(action: string | string[], resource?: any, effect?: Effect) {
     const statement: any = {
       Action: typeof action === 'string'
         ? action
         : Match.arrayWith(action as string[]),
-      Effect: effect || IAMPolicyStatementEffect.ALLOW,
+      Effect: effect || Effect.ALLOW,
     };
     if (resource !== null) {
       statement.Resource = resource || '*';
     }
     this.statements.push(Match.objectLike(statement));
-    return this.setProperty('PolicyDocument', Match.objectLike({
+    this.setProperty('PolicyDocument', Match.objectLike({
       Statement: Match.arrayWith(this.statements),
-    })) as IAMPolicy;
+    }));
+    return this;
   }
 
-  public usedByRole(role: IAMRole): IAMPolicy {
+  /**
+   * Adds a matching role assignment
+   * @param role The IAM role test constructé
+   * @returns 
+   */
+  public usedByRole(role: IAMRole) {
     this.roles.push({ Ref: role.id });
-    return this.setProperty('Roles', Match.arrayWith(this.roles)) as IAMPolicy;
+    this.setProperty('Roles', Match.arrayWith(this.roles));
+    return this;
   }
 }

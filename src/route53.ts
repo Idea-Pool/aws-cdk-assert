@@ -1,51 +1,70 @@
-// TODO: RecordSet
-
 import { Match } from "aws-cdk-lib/assertions";
-import { AdvancedMatcher } from ".";
+import { CfnRecordSet, RecordType } from "aws-cdk-lib/aws-route53";
+import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template"
-import { Resource } from "./resource";
-import { ResourceTypes } from "./types";
+import { CloudFrontDistribution } from "./cloudfront";
+import { RemovableResource } from "./resource";
 
-export enum RecordType {
-  A = 'A',
-  AAAA = 'AAAA',
-  CNAME = 'CNAME',
-  MX = 'MX',
-  TXT = 'TXT',
-  PTR = 'PTR',
-  SRV = 'SRV',
-  SPF = 'SPF',
-  NAPTR = 'NAPTR',
-  CAA = 'CAA',
-  NS = 'NS',
-}
-
-export class Route53RecordSet extends Resource {
+/**
+ * A test construct representing a Route53 RecordSet.
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53.RecordSet.html}
+ */
+export class Route53RecordSet extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.ROUTE53_RECORD_SET, template, props);
+    super(CfnRecordSet.CFN_RESOURCE_TYPE_NAME, template, props);
   }
 
-  public withRecordType(recordType: RecordType): Route53RecordSet {
-    return this.setProperty('Type', recordType) as Route53RecordSet;
+  /**
+   * Sets a matching RecordType
+   * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53.RecordType.html}
+   * @param recordType The records type to match
+   * @returns 
+   */
+  public withRecordType(recordType: RecordType) {
+    this.setProperty('Type', recordType);
+    return this;
   }
 
-  public withName(name: string): Route53RecordSet {
-    return this.setProperty('Name', name) as Route53RecordSet;
+  /**
+   * Sets a matching name for the RecordSet
+   * @param name Either the whole or a partial name of the record
+   * @returns 
+   */
+  public withName(name: string) {
+    this.setProperty('Name', Match.stringLikeRegexp(name));
+    return this;
   }
 
-  public inHostedZone(zoneId: string): Route53RecordSet {
-    return this.setProperty('HostedZoneId', zoneId) as Route53RecordSet;
+  /**
+   * Sets a matching hosted zone ID for the RecordSet
+   * @param zoneId Either the whole or a partial zone ID the record belongs to
+   * @returns 
+   */
+  public inHostedZone(zoneId: string) {
+    this.setProperty('HostedZoneId', zoneId);
+    return this;
   }
 
-  public withAliasToCloudFront(resource: Resource): Route53RecordSet {
-    return this.setProperty('AliasTarget', Match.objectLike({
-      DNSName: AdvancedMatcher.fnGetAtt(resource.id, "DomainName"),
-    })) as Route53RecordSet;
+  /**
+   * Sets a matching CloudFront Distribution target for the RecordSet
+   * @param distribution The CloudFront distribution as the target
+   * @returns 
+   */
+  public withAliasToCloudFront(distribution: CloudFrontDistribution) {
+    this.setProperty('AliasTarget', Match.objectLike({
+      DNSName: AdvancedMatcher.fnGetAtt(distribution.id, "DomainName"),
+    }));
+    return this;
   }
 
-  public withAliasToS3(): Route53RecordSet {
-    return this.setProperty('AliasTarget', Match.objectLike({
+  /**
+   * Sets a matching S3 Bucket target for the RecordSet
+   * @returns 
+   */
+  public withAliasToS3() {
+    this.setProperty('AliasTarget', Match.objectLike({
       DNSName: `s3-website.${this.template.region}.amazonaws.com`,
-    })) as Route53RecordSet;
+    }));
+    return this;
   }
 }

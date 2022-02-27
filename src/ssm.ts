@@ -1,15 +1,24 @@
 import { Match } from "aws-cdk-lib/assertions";
-import { ParameterDataType, ParameterType } from "aws-cdk-lib/aws-ssm";
+import { CfnParameter, ParameterDataType, ParameterType } from "aws-cdk-lib/aws-ssm";
 import { AdvancedTemplate } from "./advanced-template";
-import { Resource } from "./resource";
-import { ResourceTypes } from "./types";
+import { RemovableResource } from "./resource";
 
-export class SSMParameter extends Resource {
+/**
+ * A test constuct for an SSM Parameter (the resulting CfnParameter).
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ssm.CfnParameter.html}
+ */
+export class SSMParameter extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.SSM_PARAMETER, template, props);
+    super(CfnParameter.CFN_RESOURCE_TYPE_NAME, template, props);
   }
 
-  public of(type: ParameterType): SSMParameter {
+  /**
+   * Sets a matching type for the parameter
+   * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ssm.ParameterType.html}
+   * @param type The parameter type
+   * @returns 
+   */
+  public of(type: ParameterType) {
     if (type === ParameterType.AWS_EC2_IMAGE_ID) {
       this.setProperty('DataType', ParameterDataType.AWS_EC2_IMAGE);
       this.setProperty('Type', ParameterType.STRING);
@@ -19,20 +28,43 @@ export class SSMParameter extends Resource {
     return this;
   }
 
-  public withName(name: string): SSMParameter {
-    return this.setProperty('Name', name) as SSMParameter;
+  /**
+   * Sets a matching name of the parameter
+   * @param name Either the whole or a partial name
+   * @returns 
+   */
+  public withName(name: string) {
+    this.setProperty('Name', Match.stringLikeRegexp(name));
+    return this;
   }
 
-  public withValue(value: any): SSMParameter {
-    return this.setProperty('Value', value) as SSMParameter;
+  /**
+   * Sets a matching value of the parameter
+   * @param value Either a matcher of any value to match with
+   * @returns 
+   */
+  public withValue(value: any) {
+    this.setProperty(
+      'Value',
+      typeof value === "string"
+        ? Match.stringLikeRegexp(value)
+        : value
+    );
+    return this;
   }
 
-  public withListValue(value: any | any[]): SSMParameter {
-    return this.setProperty(
+  /**
+   * Sets a matching list value of the parameter
+   * @param value Either a list of values or the exact one (comma-separated)
+   * @returns 
+   */
+  public withListValue(value: any | any[]) {
+    this.setProperty(
       'Value',
       Array.isArray(value)
         ? value.join(',')
         : Match.stringLikeRegexp(value)
-    ) as SSMParameter;
+    );
+    return this;
   }
 }

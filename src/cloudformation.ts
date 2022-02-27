@@ -1,26 +1,24 @@
+import { CfnCustomResource } from "aws-cdk-lib/aws-cloudformation";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
-import { Resource } from "./resource";
-import { ResourceTypes } from "./types";
+import { RemovableResource, Resource } from "./resource";
 
-export class CloudFormationCustomResource extends Resource {
+/**
+ * A test construct for a CloudFormation Custom Resourece
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudformation.CfnCustomResource.html}
+ */
+export class CloudFormationCustomResource extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.CLOUD_FORMATION_CUSTOM_RESOURCE, template, props);
+    super(CfnCustomResource.CFN_RESOURCE_TYPE_NAME, template, props);
   }
 
-  public withServiceToken(resource: Resource): CloudFormationCustomResource {
-    return this.setProperty('ServiceToken', AdvancedMatcher.arn(resource)) as CloudFormationCustomResource;
-  }
-
-  public withDeletionPolicy(policy: string): CloudFormationCustomResource {
-    return this.setRootProperty('DeletionPolicy', policy) as CloudFormationCustomResource;
-  }
-
-  public withUpdateReplacePolicy(policy: string): CloudFormationCustomResource {
-    return this.setRootProperty('UpdateReplacePolicy', policy) as CloudFormationCustomResource;
-  }
-
-  public withProperty(key: string, value: any): CloudFormationCustomResource {
-    return this.setProperty(key, value) as CloudFormationCustomResource;
+  /**
+   * Sets a matching service token to another test construct resource
+   * @param resource The test construct resource
+   * @returns 
+   */
+  public withServiceToken(resource: Resource) {
+    this.setProperty('ServiceToken', AdvancedMatcher.arn(resource));
+    return this;
   }
 }

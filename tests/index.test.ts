@@ -1,8 +1,8 @@
-import { Resource, ResourceTypes } from "../src";
+import { Resource } from "../src";
 
 describe("aws-cdk-assert", () => {
   test('should do anything', () => {
-    const r = new Resource(ResourceTypes.CDK_METADATA, null, {})
+    const r = new Resource('AWS::CDK::Metadata', null, {})
     console.log(r);
   })
 });

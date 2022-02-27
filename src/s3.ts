@@ -1,25 +1,39 @@
 import { Match } from "aws-cdk-lib/assertions";
+import { CfnBucket, CfnBucketPolicy } from "aws-cdk-lib/aws-s3";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
-import { RemovableResource, Resource } from "./resource";
-import { ResourceTypes } from "./types";
+import { RemovableResource } from "./resource";
 
-export class S3BucketPolicy extends Resource {
+/**
+ * A test construct for an S3 BucketPolicy
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3.BucketPolicy.html}
+ */
+export class S3BucketPolicy extends RemovableResource {
   private s3Bucket: S3Bucket;
 
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.S3_BUCKET_POLICY, template, props);
+    super(CfnBucketPolicy.CFN_RESOURCE_TYPE_NAME, template, props);
   }
 
-  public forBucket(s3Bucket: S3Bucket): S3BucketPolicy {
+  /**
+   * Sets a matching S3 Bucket the BucketPolicy is connected
+   * @param s3Bucket The S3 Bucket test construct
+   * @returns 
+   */
+  public forBucket(s3Bucket: S3Bucket) {
     this.s3Bucket = s3Bucket;
-    return this.setProperty('Bucket', {
+    this.setProperty('Bucket', {
       Ref: this.s3Bucket.id,
-    }) as S3BucketPolicy;
+    });
+    return this;
   }
 
-  public withPublicAccess(): S3BucketPolicy {
-    return this.setProperty('PolicyDocument', {
+  /**
+   * Sets to match an S3 BucketPolicy with Public Access.
+   * @returns 
+   */
+  public withPublicAccess() {
+    this.setProperty('PolicyDocument', {
       Statement: Match.arrayWith([
         Match.objectLike({
           Action: 's3:GetObject',
@@ -32,26 +46,42 @@ export class S3BucketPolicy extends Resource {
           )
         })
       ])
-    }) as S3BucketPolicy;
+    });
+    return this;
   }
 }
 
+/**
+ * A test construct for an S3 Bucket
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3.Bucket.html}
+ */
 export class S3Bucket extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.S3_BUCKET, template, props);
+    super(CfnBucket.CFN_RESOURCE_TYPE_NAME, template, props);
   }
 
-  public withBucketName(name: string): S3Bucket {
-    return this.setProperty('BucketName', name) as S3Bucket;
+  /**
+   * Sets a matching bucket name
+   * @param name Either the whole of a partial bucket name
+   * @returns 
+   */
+  public withBucketName(name: string) {
+    this.setProperty('BucketName', Match.stringLikeRegexp(name));
+    return this;
   }
 
+  /**
+   * Sets a matching website hosting configuration
+   * @param options The website hosting options
+   * @returns 
+   */
   public withWebsiteHosting(options: {
     redirectTo?: string,
     redirectProtocol?: string,
     indexDocument?: string,
     errorDocument?: string,
-  } = {}): S3Bucket {
-    return this.setProperty(
+  } = {}) {
+    this.setProperty(
       'WebsiteConfiguration',
       options.redirectTo
         ? {
@@ -64,14 +94,20 @@ export class S3Bucket extends RemovableResource {
           IndexDocument: Match.stringLikeRegexp(options.indexDocument || 'index.html'),
           ErrorDocument: Match.stringLikeRegexp(options.errorDocument || 'index.html'),
         }
-    ) as S3Bucket;
+    );
+    return this;
   }
 
+  /**
+   * Sets a matching CORS configuration
+   * @param options The CORS options
+   * @returns 
+   */
   public withCorsEnabled(options: {
     methods?: string | string[],
     origins?: string | string[],
-  } = {}): S3Bucket {
-    return this.setProperty(
+  } = {}) {
+    this.setProperty(
       'CorsConfiguration',
       {
         CorsRules: Match.arrayWith([
@@ -85,7 +121,8 @@ export class S3Bucket extends RemovableResource {
           })
         ])
       }
-    ) as S3Bucket;
+    );
+    return this;
   }
 
   // TODO: withAutoDeleteObjects

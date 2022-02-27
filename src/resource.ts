@@ -2,7 +2,7 @@ import assert = require("assert");
 import { RemovalPolicy } from "aws-cdk-lib";
 import { Match } from "aws-cdk-lib/assertions";
 import { AdvancedTemplate } from "./advanced-template";
-import { Dict, ResourceTypes, KeyAndProps } from "./types";
+import { Dict, KeyAndProps } from "./types";
 
 /**
  * Represents a general test construct.
@@ -12,7 +12,7 @@ export class Resource {
   /**
    * @member The CloudFormation type of the resource.
    */
-  private type: ResourceTypes;
+  private type: string;
   /**
    * @member The parsed template.
    */
@@ -34,7 +34,7 @@ export class Resource {
    */
   protected dependencyKeys: string[];
 
-  constructor(type: ResourceTypes, template: AdvancedTemplate, props: any) {
+  constructor(type: string, template: AdvancedTemplate, props: any) {
     this.type = type;
     this.template = template;
     this.props = props;
@@ -46,7 +46,7 @@ export class Resource {
    * @param key The exact or partial key.
    * @returns 
    */
-  public withPartialKey(key: string): Resource {
+  public withPartialKey(key: string) {
     this.key = key;
     return this;
   }
@@ -57,10 +57,10 @@ export class Resource {
    * @param value The property's value, either exact or a Matcher.
    * @returns 
    */
-  protected setProperty(key: string, value: any): Resource {
+  protected setProperty(key: string, value: any) {
     if (!this.props) {
       this.props = {};
-      this.setRootProperty('Properties', this.props)
+      this.setRootProperty('Properties', this.props);
     }
     this.props[key] = value;
     return this;
@@ -73,8 +73,9 @@ export class Resource {
    * @param value The property's value, either exact or a Matcher.
    * @returns 
    */
-  public withProperty(key: string, value: any): Resource {
-    return this.setProperty(key, value);
+  public withProperty(key: string, value: any) {
+    this.setProperty(key, value);
+    return this;
   }
 
   /**
@@ -83,7 +84,7 @@ export class Resource {
    * @param value The property's value, either exact or a Matcher.
    * @returns 
    */
-  protected setRootProperty(key: string, value: any): Resource {
+  protected setRootProperty(key: string, value: any) {
     if (!this.config) {
       this.config = {};
     }
@@ -98,8 +99,9 @@ export class Resource {
    * @param value The property's value, either exact or a Matcher.
    * @returns 
    */
-  public withRootProperty(key: string, value: any): Resource {
-    return this.setRootProperty(key, value);
+  public withRootProperty(key: string, value: any) {
+    this.setRootProperty(key, value);
+    return this;
   }
 
   /**
@@ -227,7 +229,7 @@ export class Resource {
    * @returns 
    * @throws {AssertionError} if the tag is not found.
    */
-  public hasTag(key: string, value?: string): Resource {
+  public hasTag(key: string, value?: string) {
     const tag = this.definition.Properties?.Tags.find((tag: any): boolean => {
       return tag.Key === key && (!value || tag.Value === value);
     });
@@ -240,7 +242,7 @@ export class Resource {
    * @param resource The test construct to match dependency on.
    * @returns 
    */
-  public dependsOn(resource: Resource): Resource {
+  public dependsOn(resource: Resource) {
     this.dependencyKeys.push(resource.id);
     this.setRootProperty('DependsOn', Match.arrayWith(this.dependencyKeys));
     return this;

@@ -1,41 +1,65 @@
 import { Match } from "aws-cdk-lib/assertions";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
-import { Resource } from "./resource";
-import { ResourceTypes } from "./types";
+import { Resource, RemovableResource } from "./resource";
 
-export class CustomResource extends Resource {
+/**
+ * A test construct for the CustomResource resource type
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.CustomResource.html}
+ */
+export class CustomResource extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
-    super(ResourceTypes.CUSTOM, template, props);
+    super('Custom::AWS', template, props);
   }
 
-  public withEventHandler(event: string, action: string, service: string, parameters?: any): CustomResource {
+  /**
+   * Sets a matching event handler for the custom resource
+   * @param event The matching event name (exact match)
+   * @param action The matching action name (exact match)
+   * @param service The matching service name (exact match)
+   * @param parameters Optional parameters of the custom resource
+   * @returns 
+   */
+  public withEventHandler(event: string, action: string, service: string, parameters?: any) {
     const handler: any = {
       action, service,
     };
     if (parameters) {
       handler.parameters = Match.objectLike(parameters);
     }
-    return this.setProperty(event, Match.serializedJson(Match.objectLike(handler))) as CustomResource;
+    this.setProperty(event, Match.serializedJson(Match.objectLike(handler)));
+    return this;
   }
 
-  public withCreateHandler(action: string, service: string, parameters?: any): CustomResource {
+  /**
+   * Sets a matching "Create" event handler for the custom resource
+   * @param action The matching action name (exact match)
+   * @param service The matching service name (exact match)
+   * @param parameters Optional parameters of the custom resource
+   * @returns 
+   */
+  public withCreateHandler(action: string, service: string, parameters?: any) {
     return this.withEventHandler('Create', action, service, parameters);
   }
 
-  public withUpdateHandler(action: string, service: string, parameters?: any): CustomResource {
+  /**
+   * Sets a matching "Update" event handler for the custom resource
+   * @param action The matching action name (exact match)
+   * @param service The matching service name (exact match)
+   * @param parameters Optional parameters of the custom resource
+   * @returns 
+   */
+  public withUpdateHandler(action: string, service: string, parameters?: any) {
     return this.withEventHandler('Update', action, service, parameters);
   }
 
-  public withServiceToken(resource: Resource): CustomResource {
-    return this.setProperty('ServiceToken', AdvancedMatcher.arn(resource)) as CustomResource;
-  }
-
-  public withDeletionPolicy(policy: string): CustomResource {
-    return this.setRootProperty('DeletionPolicy', policy) as CustomResource;
-  }
-
-  public withUpdateReplacePolicy(policy: string): CustomResource {
-    return this.setRootProperty('UpdateReplacePolicy', policy) as CustomResource;
+  /**
+   * Sets a matching service token to the resource passed
+   * @param resource The test construct to connect
+   * @returns 
+   */
+  public withServiceToken(resource: Resource) {
+    this.setProperty('ServiceToken', AdvancedMatcher.arn(resource));
+    return this;
   }
 }
