@@ -31,7 +31,7 @@
     "**/*.js.map"
   ],
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=16.0.0"
   },
   "bugs": {
     "url": "https://github.com/szikszail/aws-cdk-assert/issues"
