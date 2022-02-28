@@ -1,4 +1,4 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { Duration, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as iam from "aws-cdk-lib/aws-iam";
@@ -27,6 +27,7 @@ export class TestIAMStack extends Stack {
       code: lambda.Code.fromInline("exports.handler = function () {}"),
       handler: 'handler',
       runtime: lambda.Runtime.NODEJS,
+      timeout: Duration.seconds(42),
     });
 
     fn.grantInvoke(roleForLambda);

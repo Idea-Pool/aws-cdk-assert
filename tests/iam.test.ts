@@ -20,7 +20,7 @@ describe("IAM", () => {
     });
     template = AdvancedTemplate.fromStack(stack);
 
-    template.debug();
+    // template.debug();
 
     roleForLambda = template
       .iamRole()

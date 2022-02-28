@@ -4,6 +4,7 @@ import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { RemovableResource, Resource } from "./resource";
 import { S3Bucket } from "./s3";
+import { WafV2WebACL } from "./wafv2";
 
 /**
  * A test construct for a CloudFront Function resource
@@ -81,7 +82,11 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withWebACL(webACLId: any) {
-    this.props.DistributionConfig.WebACLId = webACLId;
+    if (webACLId instanceof WafV2WebACL) {
+      this.props.DistributionConfig.WebACLId = AdvancedMatcher.fnGetAtt(webACLId.id, "Id");
+    } else {
+      this.props.DistributionConfig.WebACLId = webACLId;
+    }
     return this;
   }
 
@@ -90,7 +95,7 @@ export class CloudFrontDistribution extends RemovableResource {
    * @param s3Bucket The S3 Bucket test construct resource
    * @returns 
    */
-  public withS3BucketOrigin(s3Bucket: S3Bucket) {
+  public withPublicS3BucketOrigin(s3Bucket: S3Bucket) {
     this.props.DistributionConfig.Origins = [
       Match.objectLike({
         DomainName: AdvancedMatcher.s3BucketWebsiteURL(s3Bucket),

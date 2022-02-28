@@ -35,12 +35,16 @@ export class CodeBuildSourceCredentials extends RemovableResource {
    * @param authType The authentication type (exact match)
    * @param serverType The server type (exact match)
    * @param token The token (partial match)
+   * @param username The username of the token (partial match)
    * @returns 
    */
-  public withCredentials(authType: CredentialAuthType, serverType: CrednetialServerType, token: string) {
+  public withCredentials(authType: CredentialAuthType, serverType: CrednetialServerType, token: string, username?: string) {
     this.setProperty('AuthType', authType);
     this.setProperty('ServerType', serverType);
     this.setProperty('Token', Match.stringLikeRegexp(token));
+    if (username) {
+      this.setProperty('Username', Match.stringLikeRegexp(username));
+    }
     return this;
   }
 
@@ -51,6 +55,25 @@ export class CodeBuildSourceCredentials extends RemovableResource {
    */
   public withGitHubPersonalAccessToken(token: string) {
     return this.withCredentials(CredentialAuthType.PERSONAL_ACCESS_TOKEN, CrednetialServerType.GITHUB, token);
+  }
+
+  /**
+   * Sets matching credentials for GitHub Enterprise
+   * @param token The GitHub access token
+   * @returns 
+   */
+  public withGitHubEnterprisePersonalAccessToken(token: string) {
+    return this.withCredentials(CredentialAuthType.PERSONAL_ACCESS_TOKEN, CrednetialServerType.GITHUB_ENTERPRISE, token);
+  }
+
+  /**
+   * Sets matching credentials for BitBucket
+   * @param username The username
+   * @param password The password
+   * @returns 
+   */
+  public withBitBucketUser(username: string, password: string) {
+    return this.withCredentials(CredentialAuthType.BASIC_AUTH, CrednetialServerType.BITBUCKET, password, username);
   }
 }
 
@@ -107,9 +130,7 @@ export class CodeBuildProject extends RemovableResource {
     };
     if (value) {
       if (value instanceof Resource) {
-        environmentVariable.Value = {
-          Ref: value.id,
-        };
+        environmentVariable.Value = AdvancedMatcher.arn(value);
       } else if (typeof value === "string") {
         environmentVariable.Value = Match.stringLikeRegexp(value);
       } else {
