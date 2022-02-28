@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+Package transferred to [Idea Pool](https://github.com/Idea-Pool)
+
 ## 1.0.0
 
 ### Added
