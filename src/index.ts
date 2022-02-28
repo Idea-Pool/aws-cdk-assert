@@ -1,7 +1,15 @@
-import debug = require("debug");
-
-const log = debug("aws-cdk-assert");
-
-export function noop() {
-  log("noop");
-}
+export * from './advanced-matcher';
+export * from './advanced-template';
+export * from './cloudformation';
+export * from './cloudfront';
+export * from './codebuild';
+export * from './custom';
+export * from './dynamodb';
+export * from './iam';
+export * from './lambda';
+export * from './resource';
+export * from './route53';
+export * from './s3';
+export * from './ssm';
+export * from './types';
+export * from './wafv2';
