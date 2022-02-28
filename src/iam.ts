@@ -6,7 +6,7 @@ import { RemovableResource } from "./resource";
 
 /**
  * A test construct represents an IAM Role.
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam.Role.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam.CfnRole.html}
  */
 export class IAMRole extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
@@ -21,7 +21,7 @@ export class IAMRole extends RemovableResource {
    * @returns 
    */
   public assumableBy(principal: any) {
-    this.setProperty('AssumeRolePolicyDocument', Match.objectLike({
+    this.withProperty('AssumeRolePolicyDocument', Match.objectLike({
       Statement: Match.arrayWith([
         {
           Action: 'sts:AssumeRole',
@@ -57,7 +57,7 @@ export class IAMRole extends RemovableResource {
    * @returns 
    */
   public withManagedRolicy(policy: string) {
-    this.setProperty('ManagedPolicyArns', Match.arrayWith([
+    this.withProperty('ManagedPolicyArns', Match.arrayWith([
       AdvancedMatcher.fnJoin(Match.arrayWith([
         Match.stringLikeRegexp(policy),
       ])),
@@ -68,7 +68,7 @@ export class IAMRole extends RemovableResource {
 
 /**
  * A test construct representing an IAM Policy.
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam.Policy.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam.CfnPolicy.html}
  */
 export class IAMPolicy extends RemovableResource {
   /** @member The list of policy statements */
@@ -100,7 +100,7 @@ export class IAMPolicy extends RemovableResource {
       statement.Resource = resource || '*';
     }
     this.statements.push(Match.objectLike(statement));
-    this.setProperty('PolicyDocument', Match.objectLike({
+    this.withProperty('PolicyDocument', Match.objectLike({
       Statement: Match.arrayWith(this.statements),
     }));
     return this;
@@ -112,8 +112,8 @@ export class IAMPolicy extends RemovableResource {
    * @returns 
    */
   public usedByRole(role: IAMRole) {
-    this.roles.push({ Ref: role.id });
-    this.setProperty('Roles', Match.arrayWith(this.roles));
+    this.roles.push(role.ref);
+    this.withProperty('Roles', Match.arrayWith(this.roles));
     return this;
   }
 }

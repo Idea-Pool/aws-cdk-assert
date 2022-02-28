@@ -1,4 +1,4 @@
-> **IMPORTANT** This tool is not an official tool made by AWS
+> **IMPORTANT** This tool is NOT an official tool made by AWS.
 
 # aws-cdk-assert
 
@@ -21,6 +21,7 @@ The tool currently contains the following test constructs:
 | IAM            | `IAMRole`                      | `AWS::IAM::Role`                      |
 | IAM            | `IAMPolicy`                    | `AWS::IAM::Policy`                    |
 | Lambda         | `LambdaFunction`               | `AWS::Lambda::Function`               |
+| Route53        | `Route53HostedZone`            | `AWS::Route53::HostedZone`            |
 | Route53        | `Route53RecordSet`             | `AWS::Route53::RecordSet`             |
 | S3             | `S3Bucket`                     | `AWS::S3::Bucket`                     |
 | S3             | `S3BucketPolicy`               | `AWS::S3::BucketPolicy`               |
@@ -62,7 +63,7 @@ The main components/API the tool relies on:
 
 * `AdvancedTemplate` is a wrapper around [Template](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Template.html), decorated with factory methods for the predefined constructs.
 * `AdvancedMatcher` is similar to [Match](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Match.html), but with additional functions.
-* `Resource` is the base construct to work with CloudFormation constructs. It allows to
+* `Resource` (and `RemovableResource`) is the base construct to work with CloudFormation constructs. It allows to
   + construct the matcher properties, which will be used to find a construct in the template, 
   + check if a construct exists or not, 
   + check the count of a construct (not just based on type, but fully matching construct), 

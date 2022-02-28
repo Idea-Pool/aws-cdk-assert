@@ -27,7 +27,7 @@ describe("SSM", () => {
 
   test('Secret String Parameter is created', () => {
     template.ssmParameter()
-      .withName('secret-string')
+      .withName('secret')
       .of(ParameterType.SECURE_STRING)
       .withValue('VALUE')
       .exists();
@@ -35,13 +35,13 @@ describe("SSM", () => {
 
   test('String List Parameter is created', () => {
     template.ssmParameter()
-      .withName('string-list')
+      .withName('list')
       .of(ParameterType.STRING_LIST)
       .withListValue(['VALUE1', 'VALUE2'])
       .exists();
 
     template.ssmParameter()
-      .withName('string-list')
+      .withName('list')
       .of(ParameterType.STRING_LIST)
       .withListValue('VALUE2')
       .exists();

@@ -8,7 +8,7 @@ import { WafV2WebACL } from "./wafv2";
 
 /**
  * A test construct for a CloudFront Function resource
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.Function.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.CfnFunction.html}
  */
 export class CloudFrontFunction extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
@@ -21,19 +21,19 @@ export class CloudFrontFunction extends RemovableResource {
    * @returns 
    */
   public withCode(code: string) {
-    this.setProperty('FunctionCode', Match.stringLikeRegexp(code));
+    this.withProperty('FunctionCode', Match.stringLikeRegexp(code));
     return this;
   }
 }
 
 /**
  * A test construct for a CloudFront Distribution
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.Distribution.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.CfnDistribution.html}
  */
 export class CloudFrontDistribution extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
     super(CfnDistribution.CFN_RESOURCE_TYPE_NAME, template, props);
-    this.setProperty('DistributionConfig', {});
+    this.withProperty('DistributionConfig', {});
   }
 
   /**

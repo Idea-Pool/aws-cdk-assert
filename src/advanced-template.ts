@@ -2,7 +2,7 @@ import { Stack } from "aws-cdk-lib";
 import { Template } from "aws-cdk-lib/assertions";
 import { CloudFrontDistribution, CloudFrontFunction } from "./cloudfront";
 import { S3Bucket, S3BucketPolicy } from "./s3";
-import { Route53RecordSet } from "./route53";
+import { Route53HostedZone, Route53RecordSet } from "./route53";
 import { Dict, KeyAndProps } from "./types";
 import { CloudFormationCustomResource } from "./cloudformation";
 import { CodeBuildProject, CodeBuildSourceCredentials } from "./codebuild";
@@ -12,6 +12,8 @@ import { SSMParameter } from "./ssm";
 import { WafV2WebACL } from "./wafv2";
 import { IAMPolicy, IAMRole } from "./iam";
 import { LambdaFunction } from "./lambda";
+import { Resource } from "./resource";
+import { RemovableResource } from ".";
 
 /**
  * CloudFormation/CDK template assertion class, 
@@ -171,8 +173,12 @@ export class AdvancedTemplate {
    * Checks if the template matches the passed CloudFormation JSON template.
    * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Template.html#templatewbrmatchesexpected}
    */
-  public templateMatches(expected: any): void {
-    this.template.templateMatches(expected);
+  public templateMatches(expected: AdvancedTemplate | KeyAndProps): void {
+    if (expected instanceof AdvancedTemplate) {
+      this.templateMatches(expected.toJSON());
+    } else {
+      this.template.templateMatches(expected);
+    }
   }
 
   /**
@@ -193,6 +199,26 @@ export class AdvancedTemplate {
   ////////////////////////////////////////////////////////////////////////////
   // TEST CONSTRUCTS
   ////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Creates a general Resource test construct with the passed type and properties.
+   * @param type The CloudFormation resource type
+   * @param props The properties of the extected test construct
+   * @returns 
+   */
+  public resource(type: string, props?: any): Resource {
+    return new Resource(type, this, props);
+  }
+
+  /**
+   * Creates a general RemovableResource test construct with the passed type and properties.
+   * @param type The CloudFormation resource type
+   * @param props The properties of the extected test construct
+   * @returns 
+   */
+  public removableResource(type: string, props?: any): RemovableResource {
+    return new RemovableResource(type, this, props);
+  }
 
   /**
    * Creates a CloudFormation CustomResource test construct with the passed Properties.
@@ -282,6 +308,15 @@ export class AdvancedTemplate {
    */
   public lambdaFunction(props?: any): LambdaFunction {
     return new LambdaFunction(this, props);
+  }
+
+  /**
+   * Creates a Route53 HostedZone test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public route53HostedZone(props?: any): Route53HostedZone {
+    return new Route53HostedZone(this, props);
   }
 
   /**

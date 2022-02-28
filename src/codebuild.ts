@@ -39,11 +39,11 @@ export class CodeBuildSourceCredentials extends RemovableResource {
    * @returns 
    */
   public withCredentials(authType: CredentialAuthType, serverType: CrednetialServerType, token: string, username?: string) {
-    this.setProperty('AuthType', authType);
-    this.setProperty('ServerType', serverType);
-    this.setProperty('Token', Match.stringLikeRegexp(token));
+    this.withProperty('AuthType', authType);
+    this.withProperty('ServerType', serverType);
+    this.withProperty('Token', Match.stringLikeRegexp(token));
     if (username) {
-      this.setProperty('Username', Match.stringLikeRegexp(username));
+      this.withProperty('Username', Match.stringLikeRegexp(username));
     }
     return this;
   }
@@ -79,7 +79,7 @@ export class CodeBuildSourceCredentials extends RemovableResource {
 
 /**
  * A test construct for a CodeBuild Project resource
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.Project.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.CfnProject.html}
  */
 export class CodeBuildProject extends RemovableResource {
   private environmentVariables: any[];
@@ -97,7 +97,7 @@ export class CodeBuildProject extends RemovableResource {
    * @returns 
    */
   public withServiceRole(resource: Resource) {
-    this.setProperty('ServiceRole', AdvancedMatcher.arn(resource));
+    this.withProperty('ServiceRole', AdvancedMatcher.arn(resource));
     return this;
   }
 
@@ -112,7 +112,7 @@ export class CodeBuildProject extends RemovableResource {
     this.source.Location = Match.stringLikeRegexp(location);
     this.source.Type = type;
 
-    this.setProperty('Source', Match.objectLike(this.source));
+    this.withProperty('Source', Match.objectLike(this.source));
     return this;
   }
 
@@ -138,7 +138,7 @@ export class CodeBuildProject extends RemovableResource {
       }
     }
     this.environmentVariables.push(Match.objectLike(environmentVariable));
-    this.setProperty('Environment', Match.objectLike({
+    this.withProperty('Environment', Match.objectLike({
       EnvironmentVariables: Match.arrayWith(this.environmentVariables),
     }));
     return this;
@@ -150,7 +150,7 @@ export class CodeBuildProject extends RemovableResource {
    * @returns 
    */
   public withConcurrentBuildLimit(limit: number) {
-    this.setProperty('ConcurrentBuildLimit', limit);
+    this.withProperty('ConcurrentBuildLimit', limit);
     return this;
   }
 
@@ -168,7 +168,7 @@ export class CodeBuildProject extends RemovableResource {
       }
       return Match.objectLike(filter);
     });
-    this.setProperty('Triggers', Match.objectLike({
+    this.withProperty('Triggers', Match.objectLike({
       Webhook: !!webhook,
       FilterGroups: Match.arrayWith([
         Match.arrayWith(eventMatchers)
@@ -193,16 +193,14 @@ export class CodeBuildProject extends RemovableResource {
     };
     if (location) {
       if (location instanceof Resource) {
-        artifact.Location = {
-          Ref: location.id,
-        };
+        artifact.Location = location.ref;
       } else if (typeof location === "string") {
         artifact.Location = Match.stringLikeRegexp(location);
       } else {
         artifact.Location = location;
       }
     }
-    this.setProperty('Artifacts', Match.objectLike(artifact));
+    this.withProperty('Artifacts', Match.objectLike(artifact));
     return this;
   }
 
@@ -215,7 +213,7 @@ export class CodeBuildProject extends RemovableResource {
     this.source = this.source || {};
     this.source.BuildSpec = Match.stringLikeRegexp(command);
 
-    this.setProperty('Source', Match.objectLike(this.source));
+    this.withProperty('Source', Match.objectLike(this.source));
     return this;
   }
 }

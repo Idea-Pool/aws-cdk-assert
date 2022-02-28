@@ -7,7 +7,7 @@ import { RemovableResource } from "./resource";
 
 /**
  * A test construct represents a Lambda Function
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda.Function.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda.CfnFunction.html}
  */
 export class LambdaFunction extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
@@ -20,7 +20,7 @@ export class LambdaFunction extends RemovableResource {
    * @returns 
    */
   public withRole(iamRole: IAMRole) {
-    this.setProperty('Role', AdvancedMatcher.arn(iamRole));
+    this.withProperty('Role', AdvancedMatcher.arn(iamRole));
     return this;
   }
 
@@ -30,7 +30,7 @@ export class LambdaFunction extends RemovableResource {
    * @returns 
    */
   public withRuntime(runtime: string) {
-    this.setProperty('Runtime', Match.stringLikeRegexp(runtime));
+    this.withProperty('Runtime', Match.stringLikeRegexp(runtime));
     return this;
   }
 
@@ -40,7 +40,7 @@ export class LambdaFunction extends RemovableResource {
    * @returns 
    */
   public withHandler(handler: string) {
-    this.setProperty('Handler', Match.stringLikeRegexp(handler));
+    this.withProperty('Handler', Match.stringLikeRegexp(handler));
     return this;
   }
 
@@ -50,7 +50,7 @@ export class LambdaFunction extends RemovableResource {
    * @returns 
    */
   public withTimeout(timeout: number) {
-    this.setProperty('Timeout', timeout);
+    this.withProperty('Timeout', timeout);
     return this;
   }
 }

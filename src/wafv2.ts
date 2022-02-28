@@ -23,7 +23,7 @@ export class WafV2WebACL extends RemovableResource {
    * @returns 
    */
   public inScope(scope: WebACLScope) {
-    this.setProperty('Scope', Match.stringLikeRegexp(scope));
+    this.withProperty('Scope', Match.stringLikeRegexp(scope));
     return this;
   }
 
@@ -51,7 +51,7 @@ export class WafV2WebACL extends RemovableResource {
   }
 
   /**
-   * Checks if there is a rate based rule with a matching limit
+   * Checks if there is a rate-based rule with a matching limit
    * in the rules of the resource definition.
    * @param keyType The type of the aggregate key
    * @param limit The limit of the rule

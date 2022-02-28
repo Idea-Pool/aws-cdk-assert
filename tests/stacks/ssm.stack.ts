@@ -1,4 +1,4 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { Stack, StackProps, Tags } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 
@@ -8,19 +8,24 @@ export class TestSSMStack extends Stack {
 
     // SSM STRING PARAMETER
 
-    new ssm.StringParameter(this, id + 'StringParameter', {
+    const stringParameter = new ssm.StringParameter(this, id + 'StringParameter', {
       parameterName: 'string',
       stringValue: 'VALUE',
       type: ssm.ParameterType.STRING,
     });
 
+    Tags.of(stringParameter).add('Type', 'String');
+
     // SSM SECRET_STRING PARAMETER
 
-    new ssm.StringParameter(this, id + 'SecretStringParameter', {
-      parameterName: 'secret-string',
+    const secretParameter = new ssm.StringParameter(this, id + 'SecretStringParameter', {
+      parameterName: 'secret',
       stringValue: 'VALUE',
       type: ssm.ParameterType.SECURE_STRING,
     });
+
+    secretParameter.node.addDependency(stringParameter);
+    Tags.of(secretParameter).add('Type', 'Secure String');
 
     // SSM IMAGE_ID PARAMETER
 
@@ -33,7 +38,7 @@ export class TestSSMStack extends Stack {
     // SSM STRING LIST PARAMETER
 
     new ssm.StringListParameter(this, id + 'StringListParameter', {
-      parameterName: 'string-list',
+      parameterName: 'list',
       stringListValue: ['VALUE1', 'VALUE2'],
     });
   }

@@ -46,6 +46,15 @@ export class AdvancedMatcher {
   }
 
   /**
+   * Matches a Fn::Equals with the passed values.
+   * @param pattern The values to match with, in order.
+   * @returns 
+   */
+  public static fnEquals(...pattern: any[]): Matcher {
+    return this.fn('Equals', ...pattern);
+  }
+
+  /**
    * Matches a Fn::Join with the passed value.
    * @param pattern The value to match with.
    * @returns 

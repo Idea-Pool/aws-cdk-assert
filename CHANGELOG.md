@@ -16,6 +16,7 @@
 | IAM            | `IAMRole`                      | `AWS::IAM::Role`                      |
 | IAM            | `IAMPolicy`                    | `AWS::IAM::Policy`                    |
 | Lambda         | `LambdaFunction`               | `AWS::Lambda::Function`               |
+| Route53        | `Route53HostedZone`            | `AWS::Route53::HostedZone`            |
 | Route53        | `Route53RecordSet`             | `AWS::Route53::RecordSet`             |
 | S3             | `S3Bucket`                     | `AWS::S3::Bucket`                     |
 | S3             | `S3BucketPolicy`               | `AWS::S3::BucketPolicy`               |
@@ -26,4 +27,4 @@
 
 ### Added
 
-- Added placeholder of aws-cdk-assert
+- Added placeholder of `aws-cdk-assert`

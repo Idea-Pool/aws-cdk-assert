@@ -20,10 +20,10 @@ export class SSMParameter extends RemovableResource {
    */
   public of(type: ParameterType) {
     if (type === ParameterType.AWS_EC2_IMAGE_ID) {
-      this.setProperty('DataType', ParameterDataType.AWS_EC2_IMAGE);
-      this.setProperty('Type', ParameterType.STRING);
+      this.withProperty('DataType', ParameterDataType.AWS_EC2_IMAGE);
+      this.withProperty('Type', ParameterType.STRING);
     } else {
-      this.setProperty('Type', type);
+      this.withProperty('Type', type);
     }
     return this;
   }
@@ -34,7 +34,7 @@ export class SSMParameter extends RemovableResource {
    * @returns 
    */
   public withName(name: string) {
-    this.setProperty('Name', Match.stringLikeRegexp(name));
+    this.withProperty('Name', Match.stringLikeRegexp(name));
     return this;
   }
 
@@ -44,7 +44,7 @@ export class SSMParameter extends RemovableResource {
    * @returns 
    */
   public withValue(value: any) {
-    this.setProperty(
+    this.withProperty(
       'Value',
       typeof value === "string"
         ? Match.stringLikeRegexp(value)
@@ -59,7 +59,7 @@ export class SSMParameter extends RemovableResource {
    * @returns 
    */
   public withListValue(value: any | any[]) {
-    this.setProperty(
+    this.withProperty(
       'Value',
       Array.isArray(value)
         ? value.join(',')

@@ -54,7 +54,43 @@ export class TestCloudFrontStack extends Stack {
         sampledRequestsEnabled: true,
       },
       name: 'example.com',
-      rules: [],
+      rules: [
+        {
+          name: 'AWSManagedRulesCommonRuleSet',
+          priority: 100,
+          overrideAction: { none: {} },
+          statement: {
+            managedRuleGroupStatement: {
+              name: 'AWSManagedRulesCommonRuleSet',
+              vendorName: 'AWS',
+              excludedRules: [],
+            },
+          },
+          visibilityConfig: {
+            sampledRequestsEnabled: true,
+            cloudWatchMetricsEnabled: true,
+            metricName: 'AWSManagedRulesCommonRuleSet',
+          },
+        },
+        {
+          name: 'RateLimit100',
+          priority: 1,
+          action: {
+            block: {},
+          },
+          visibilityConfig: {
+            sampledRequestsEnabled: true,
+            cloudWatchMetricsEnabled: true,
+            metricName: 'RateLimit100'
+          },
+          statement: {
+            rateBasedStatement: {
+              limit: 100,
+              aggregateKeyType: 'IP',
+            },
+          },
+        }
+      ],
     })
 
     // DISTRIBUTION

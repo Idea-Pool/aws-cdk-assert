@@ -1,6 +1,6 @@
 import assert = require("assert");
 import { RemovalPolicy } from "aws-cdk-lib";
-import { Match } from "aws-cdk-lib/assertions";
+import { Match, Matcher } from "aws-cdk-lib/assertions";
 import { AdvancedTemplate } from "./advanced-template";
 import { Dict, KeyAndProps } from "./types";
 
@@ -57,50 +57,26 @@ export class Resource {
    * @param value The property's value, either exact or a Matcher.
    * @returns 
    */
-  protected setProperty(key: string, value: any) {
+  public withProperty(key: string, value: any) {
     if (!this.props) {
       this.props = {};
-      this.setRootProperty('Properties', this.props);
+      this.withRootProperty('Properties', this.props);
     }
     this.props[key] = value;
     return this;
   }
 
   /**
-   * Sets/Overwrites a particular property in Properties.
-   * @see {@link setProperty}
-   * @param key The key of the property.
-   * @param value The property's value, either exact or a Matcher.
-   * @returns 
-   */
-  public withProperty(key: string, value: any) {
-    this.setProperty(key, value);
-    return this;
-  }
-
-  /**
    * Sets/Overwrites a particular property in the root definition.
-   * @param key The key of the property.
-   * @param value The property's value, either exact or a Matcher.
-   * @returns 
-   */
-  protected setRootProperty(key: string, value: any) {
-    if (!this.config) {
-      this.config = {};
-    }
-    this.config[key] = value;
-    return this;
-  }
-
-  /**
-   * Sets/Overwrites a particular property in the root definition.
-   * @see {@link setRootProperty}
    * @param key The key of the property.
    * @param value The property's value, either exact or a Matcher.
    * @returns 
    */
   public withRootProperty(key: string, value: any) {
-    this.setRootProperty(key, value);
+    if (!this.config) {
+      this.config = {};
+    }
+    this.config[key] = value;
     return this;
   }
 
@@ -153,6 +129,12 @@ export class Resource {
    */
   public get id(): string {
     return this.definition.Id;
+  }
+
+  public get ref(): Matcher {
+    return Match.objectEquals({
+      Ref: this.id,
+    });
   }
 
   /**
@@ -230,10 +212,12 @@ export class Resource {
    * @throws {AssertionError} if the tag is not found.
    */
   public hasTag(key: string, value?: string) {
-    const tag = this.definition.Properties?.Tags.find((tag: any): boolean => {
-      return tag.Key === key && (!value || tag.Value === value);
-    });
-    this.assert(tag, `There is no such tag like ${key}${value ? ':' + value : ''}`);
+    const tags = this.definition.Properties?.Tags;
+    this.assert(tags, 'The resource does not have any tags');
+    this.assert(key in tags, `There is no such tag like '${key}' on the resource!`);
+    if (value) {
+      this.assert(tags[key] === value, `The tag '${key}' is not as expected (${value}): ${tags[key]}!`);
+    }
     return this;
   }
 
@@ -244,7 +228,7 @@ export class Resource {
    */
   public dependsOn(resource: Resource) {
     this.dependencyKeys.push(resource.id);
-    this.setRootProperty('DependsOn', Match.arrayWith(this.dependencyKeys));
+    this.withRootProperty('DependsOn', Match.arrayWith(this.dependencyKeys));
     return this;
   }
 }
@@ -275,8 +259,8 @@ export class RemovableResource extends Resource {
    */
   public withRemovalPolicy(policy: RemovalPolicy) {
     const operation = RemovableResource.mapRemovalPolicy(policy);
-    this.setRootProperty('DeletionPolicy', Match.stringLikeRegexp(operation));
-    this.setRootProperty('UpdateReplacePolicy', Match.stringLikeRegexp(operation));
+    this.withRootProperty('DeletionPolicy', Match.stringLikeRegexp(operation));
+    this.withRootProperty('UpdateReplacePolicy', Match.stringLikeRegexp(operation));
     return this;
   }
 }

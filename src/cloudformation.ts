@@ -18,7 +18,7 @@ export class CloudFormationCustomResource extends RemovableResource {
    * @returns 
    */
   public withServiceToken(resource: Resource) {
-    this.setProperty('ServiceToken', AdvancedMatcher.arn(resource));
+    this.withProperty('ServiceToken', AdvancedMatcher.arn(resource));
     return this;
   }
 }

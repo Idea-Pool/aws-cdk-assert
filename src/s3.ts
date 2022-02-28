@@ -6,7 +6,7 @@ import { RemovableResource } from "./resource";
 
 /**
  * A test construct for an S3 BucketPolicy
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3.BucketPolicy.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3.CfnBucketPolicy.html}
  */
 export class S3BucketPolicy extends RemovableResource {
   private s3Bucket: S3Bucket;
@@ -22,7 +22,7 @@ export class S3BucketPolicy extends RemovableResource {
    */
   public forBucket(s3Bucket: S3Bucket) {
     this.s3Bucket = s3Bucket;
-    this.setProperty('Bucket', {
+    this.withProperty('Bucket', {
       Ref: this.s3Bucket.id,
     });
     return this;
@@ -33,7 +33,7 @@ export class S3BucketPolicy extends RemovableResource {
    * @returns 
    */
   public withPublicAccess() {
-    this.setProperty('PolicyDocument', {
+    this.withProperty('PolicyDocument', {
       Statement: Match.arrayWith([
         Match.objectLike({
           Action: 's3:GetObject',
@@ -53,7 +53,7 @@ export class S3BucketPolicy extends RemovableResource {
 
 /**
  * A test construct for an S3 Bucket
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3.Bucket.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3.CfnBucket.html}
  */
 export class S3Bucket extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
@@ -66,7 +66,7 @@ export class S3Bucket extends RemovableResource {
    * @returns 
    */
   public withBucketName(name: string) {
-    this.setProperty('BucketName', Match.stringLikeRegexp(name));
+    this.withProperty('BucketName', Match.stringLikeRegexp(name));
     return this;
   }
 
@@ -81,7 +81,7 @@ export class S3Bucket extends RemovableResource {
     indexDocument?: string,
     errorDocument?: string,
   } = {}) {
-    this.setProperty(
+    this.withProperty(
       'WebsiteConfiguration',
       options.redirectTo
         ? {
@@ -107,7 +107,7 @@ export class S3Bucket extends RemovableResource {
     methods?: string | string[],
     origins?: string | string[],
   } = {}) {
-    this.setProperty(
+    this.withProperty(
       'CorsConfiguration',
       {
         CorsRules: Match.arrayWith([

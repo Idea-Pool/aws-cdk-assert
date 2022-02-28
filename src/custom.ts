@@ -5,7 +5,7 @@ import { Resource, RemovableResource } from "./resource";
 
 /**
  * A test construct for the CustomResource resource type
- * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.CustomResource.html}
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.CfnCustomResource.html}
  */
 export class CustomResource extends RemovableResource {
   constructor(template: AdvancedTemplate, props?: any) {
@@ -27,7 +27,7 @@ export class CustomResource extends RemovableResource {
     if (parameters) {
       handler.parameters = Match.objectLike(parameters);
     }
-    this.setProperty(event, Match.serializedJson(Match.objectLike(handler)));
+    this.withProperty(event, Match.serializedJson(Match.objectLike(handler)));
     return this;
   }
 
@@ -59,7 +59,7 @@ export class CustomResource extends RemovableResource {
    * @returns 
    */
   public withServiceToken(resource: Resource) {
-    this.setProperty('ServiceToken', AdvancedMatcher.arn(resource));
+    this.withProperty('ServiceToken', AdvancedMatcher.arn(resource));
     return this;
   }
 }
