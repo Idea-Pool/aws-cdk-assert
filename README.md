@@ -2,7 +2,7 @@
 
 # aws-cdk-assert
 
-![Downloads](https://img.shields.io/npm/dw/aws-cdk-assert?style=flat-square) ![Version@npm](https://img.shields.io/npm/v/aws-cdk-assert?label=version%40npm&style=flat-square) ![Version@git](https://img.shields.io/github/package-json/v/szikszail/aws-cdk-assert/main?label=version%40git&style=flat-square) ![CI](https://img.shields.io/github/workflow/status/szikszail/aws-cdk-assert/CI/main?label=ci&style=flat-square) ![Docs](https://img.shields.io/github/workflow/status/szikszail/aws-cdk-assert/Docs/main?label=docs&style=flat-square)
+![Downloads](https://img.shields.io/npm/dw/aws-cdk-assert?style=flat-square) ![Version@npm](https://img.shields.io/npm/v/aws-cdk-assert?label=version%40npm&style=flat-square) ![Version@git](https://img.shields.io/github/package-json/v/idea-pool/aws-cdk-assert/main?label=version%40git&style=flat-square) ![CI](https://img.shields.io/github/workflow/status/idea-pool/aws-cdk-assert/CI/main?label=ci&style=flat-square) ![Docs](https://img.shields.io/github/workflow/status/idea-pool/aws-cdk-assert/Docs/main?label=docs&style=flat-square)
 
 This tool gives handy utilities to test AWS CDK Stack, with predefined test constructs for certain CDK constructs.
 
@@ -70,4 +70,4 @@ The main components/API the tool relies on:
   + make assertions with extended information in case of failure, 
   + etc.
 
-For detailed documentation see the [TypeDocs documentation](https://szikszail.github.io/aws-cdk-assert/).
+For detailed documentation see the [TypeDocs documentation](https://idea-pool.github.io/aws-cdk-assert/).

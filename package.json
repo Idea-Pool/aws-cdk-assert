@@ -16,14 +16,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/szikszail/aws-cdk-assert.git"
+    "url": "git+https://github.com/idea-pool/aws-cdk-assert.git"
   },
   "keywords": [
     "aws",
     "cdk",
     "assert"
   ],
-  "author": "Laszlo Szikszai <sziklaszlo@gmail.com>",
+  "author": "Idea Pool",
+  "contributors": [
+    "Laszlo Szikszai <sziklaszlo@gmail.com>"
+  ],
   "license": "MIT",
   "files": [
     "**/*.js",
@@ -34,9 +37,9 @@
     "node": ">=16.0.0"
   },
   "bugs": {
-    "url": "https://github.com/szikszail/aws-cdk-assert/issues"
+    "url": "https://github.com/idea-pool/aws-cdk-assert/issues"
   },
-  "homepage": "https://github.com/szikszail/aws-cdk-assert#readme",
+  "homepage": "https://github.com/idea-pool/aws-cdk-assert#readme",
   "devDependencies": {
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.21",
