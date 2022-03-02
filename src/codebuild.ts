@@ -1,6 +1,5 @@
 import { Match } from "aws-cdk-lib/assertions";
 import { BuildEnvironmentVariableType, CfnProject, CfnSourceCredential } from "aws-cdk-lib/aws-codebuild";
-import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { Resource, RemovableResource } from "./resource";
 
@@ -97,7 +96,7 @@ export class CodeBuildProject extends RemovableResource {
    * @returns 
    */
   public withServiceRole(resource: Resource) {
-    this.withProperty('ServiceRole', AdvancedMatcher.arn(resource));
+    this.withProperty('ServiceRole', resource.arn);
     return this;
   }
 
@@ -130,7 +129,7 @@ export class CodeBuildProject extends RemovableResource {
     };
     if (value) {
       if (value instanceof Resource) {
-        environmentVariable.Value = AdvancedMatcher.arn(value);
+        environmentVariable.Value = value.arn;
       } else if (typeof value === "string") {
         environmentVariable.Value = Match.stringLikeRegexp(value);
       } else {

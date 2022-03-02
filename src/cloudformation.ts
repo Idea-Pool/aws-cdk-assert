@@ -1,10 +1,9 @@
 import { CfnCustomResource } from "aws-cdk-lib/aws-cloudformation";
-import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { RemovableResource, Resource } from "./resource";
 
 /**
- * A test construct for a CloudFormation Custom Resourece
+ * A test construct for a CloudFormation Custom Resource
  * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudformation.CfnCustomResource.html}
  */
 export class CloudFormationCustomResource extends RemovableResource {
@@ -18,7 +17,7 @@ export class CloudFormationCustomResource extends RemovableResource {
    * @returns 
    */
   public withServiceToken(resource: Resource) {
-    this.withProperty('ServiceToken', AdvancedMatcher.arn(resource));
+    this.withProperty('ServiceToken', resource.arn);
     return this;
   }
 }

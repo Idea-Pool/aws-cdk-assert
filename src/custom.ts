@@ -1,5 +1,4 @@
 import { Match } from "aws-cdk-lib/assertions";
-import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { Resource, RemovableResource } from "./resource";
 
@@ -59,7 +58,7 @@ export class CustomResource extends RemovableResource {
    * @returns 
    */
   public withServiceToken(resource: Resource) {
-    this.withProperty('ServiceToken', AdvancedMatcher.arn(resource));
+    this.withProperty('ServiceToken', resource.arn);
     return this;
   }
 }

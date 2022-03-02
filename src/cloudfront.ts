@@ -71,7 +71,7 @@ export class CloudFrontDistribution extends RemovableResource {
    */
   public withCertificate(requestorResource: Resource) {
     this.props.DistributionConfig.ViewerCertificate = Match.objectLike({
-      AcmCertificateArn: AdvancedMatcher.arn(requestorResource),
+      AcmCertificateArn: requestorResource.arn,
     });
     return this;
   }

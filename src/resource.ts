@@ -1,6 +1,7 @@
 import assert = require("assert");
 import { RemovalPolicy } from "aws-cdk-lib";
 import { Match, Matcher } from "aws-cdk-lib/assertions";
+import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { Dict, KeyAndProps } from "./types";
 
@@ -129,6 +130,10 @@ export class Resource {
    */
   public get id(): string {
     return this.definition.Id;
+  }
+
+  public get arn(): Matcher {
+    return AdvancedMatcher.arn(this);
   }
 
   public get ref(): Matcher {

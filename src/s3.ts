@@ -41,7 +41,7 @@ export class S3BucketPolicy extends RemovableResource {
           Principal: { AWS: '*' },
           Resource: AdvancedMatcher.fnJoin(
             Match.arrayWith([
-              AdvancedMatcher.arn(this.s3Bucket)
+              this.s3Bucket.arn,
             ])
           )
         })
