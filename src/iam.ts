@@ -108,12 +108,22 @@ export class IAMPolicy extends RemovableResource {
 
   /**
    * Adds a matching role assignment
-   * @param role The IAM role test constructé
+   * @param role The IAM role test construct
    * @returns 
    */
   public usedByRole(role: IAMRole) {
     this.roles.push(role.ref);
     this.withProperty('Roles', Match.arrayWith(this.roles));
+    return this;
+  }
+
+  /**
+   * Adds a matching PolicyName for the policy
+   * @param name Either the whole or a partial policy name
+   * @returns 
+   */
+  public withPolicyName(name: string) {
+    this.withProperty('PolicyName', Match.stringLikeRegexp(name));
     return this;
   }
 }

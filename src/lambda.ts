@@ -1,5 +1,5 @@
 import { Match } from "aws-cdk-lib/assertions";
-import { CfnFunction, CfnPermission } from "aws-cdk-lib/aws-lambda";
+import { CfnFunction, CfnPermission, Runtime } from "aws-cdk-lib/aws-lambda";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { IAMRole } from "./iam";
@@ -32,8 +32,12 @@ export class LambdaFunction extends RemovableResource {
    * @param runtime Either exact or partial string of the runtime
    * @returns 
    */
-  public withRuntime(runtime: string) {
-    this.withProperty('Runtime', Match.stringLikeRegexp(runtime));
+  public withRuntime(runtime: string | Runtime) {
+    if (runtime instanceof Runtime) {
+      this.withProperty('Runtime', runtime.toString());
+    } else {
+      this.withProperty('Runtime', runtime);
+    }
     return this;
   }
 
@@ -88,12 +92,12 @@ export class LambdaPermission extends Resource {
   }
 
   public withAction(action: string) {
-    this.withProperty('Action', Match.stringLikeRegexp(action));
+    this.withProperty('Action', action);
     return this;
   }
 
   public withPrincipal(principal: string) {
-    this.withProperty('Principal', Match.stringLikeRegexp(principal));
+    this.withProperty('Principal', principal);
     return this;
   }
 

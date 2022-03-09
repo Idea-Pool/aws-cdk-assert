@@ -11,9 +11,12 @@ import { DynamoDBTable } from "./dynamodb";
 import { SSMParameter } from "./ssm";
 import { WafV2WebACL } from "./wafv2";
 import { IAMPolicy, IAMRole } from "./iam";
-import { LambdaFunction } from "./lambda";
+import { LambdaFunction, LambdaPermission } from "./lambda";
 import { Resource } from "./resource";
 import { RemovableResource } from ".";
+import { LogGroup } from "./logs";
+import { ApiGatewayAccount, ApiGatewayApiKey, ApiGatewayBasePathMapping, ApiGatewayDeployment, ApiGatewayDomain, ApiGatewayMethod, ApiGatewayResource, ApiGatewayRestApi, ApiGatewayStage, ApiGatewayUsagePlan, ApiGatewayUsagePlanKey } from "./apigateway";
+import { Secret } from "./secretsmanager";
 
 /**
  * CloudFormation/CDK template assertion class, 
@@ -203,7 +206,7 @@ export class AdvancedTemplate {
   /**
    * Creates a general Resource test construct with the passed type and properties.
    * @param type The CloudFormation resource type
-   * @param props The properties of the extected test construct
+   * @param props The properties of the expected test construct
    * @returns 
    */
   public resource(type: string, props?: any): Resource {
@@ -213,11 +216,55 @@ export class AdvancedTemplate {
   /**
    * Creates a general RemovableResource test construct with the passed type and properties.
    * @param type The CloudFormation resource type
-   * @param props The properties of the extected test construct
+   * @param props The properties of the expected test construct
    * @returns 
    */
   public removableResource(type: string, props?: any): RemovableResource {
     return new RemovableResource(type, this, props);
+  }
+
+  public apiGatewayAccount(props?: any): ApiGatewayAccount {
+    return new ApiGatewayAccount(this, props);
+  }
+
+  public apiGatewayApiKey(props?: any): ApiGatewayApiKey {
+    return new ApiGatewayApiKey(this, props);
+  }
+
+  public apiGatewayBasePathMapping(props?: any): ApiGatewayBasePathMapping {
+    return new ApiGatewayBasePathMapping(this, props);
+  }
+
+  public apiGatewayDeployment(props?: any): ApiGatewayDeployment {
+    return new ApiGatewayDeployment(this, props);
+  }
+
+  public apiGatewayDomain(props?: any): ApiGatewayDomain {
+    return new ApiGatewayDomain(this, props);
+  }
+
+  public apiGatewayMethod(props?: any): ApiGatewayMethod {
+    return new ApiGatewayMethod(this, props);
+  }
+
+  public apiGatewayResource(props?: any): ApiGatewayResource {
+    return new ApiGatewayResource(this, props);
+  }
+
+  public apiGatewayRestApi(props?: any): ApiGatewayRestApi {
+    return new ApiGatewayRestApi(this, props);
+  }
+
+  public apiGatewayStage(props?: any): ApiGatewayStage {
+    return new ApiGatewayStage(this, props);
+  }
+
+  public apiGatewayUsagePlan(props?: any): ApiGatewayUsagePlan {
+    return new ApiGatewayUsagePlan(this, props);
+  }
+
+  public apiGatewayUsagePlanKey(props?: any): ApiGatewayUsagePlanKey {
+    return new ApiGatewayUsagePlanKey(this, props);
   }
 
   /**
@@ -310,6 +357,19 @@ export class AdvancedTemplate {
     return new LambdaFunction(this, props);
   }
 
+  public lambdaPermission(props?: any): LambdaPermission {
+    return new LambdaPermission(this, props);
+  }
+
+  /**
+   * Creates a LogGroup test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public logGroup(props?: any): LogGroup {
+    return new LogGroup(this, props);
+  }
+
   /**
    * Creates a Route53 HostedZone test construct with the passed Properties.
    * @param props The Properties of the expected test construct.
@@ -344,6 +404,10 @@ export class AdvancedTemplate {
    */
   public s3BucketPolicy(props?: any): S3BucketPolicy {
     return new S3BucketPolicy(this, props);
+  }
+
+  public secret(props?: any): Secret {
+    return new Secret(this, props);
   }
 
   /**

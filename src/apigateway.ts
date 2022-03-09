@@ -1,11 +1,12 @@
 import { Match } from "aws-cdk-lib/assertions";
-import { CfnAccount, CfnDeployment, CfnMethod, CfnResource, CfnRestApi, CfnStage } from "aws-cdk-lib/aws-apigateway";
+import { CfnAccount, CfnApiKey, CfnBasePathMapping, CfnDeployment, CfnDomainName, CfnMethod, CfnResource, CfnRestApi, CfnStage, CfnUsagePlan, CfnUsagePlanKey, EndpointType, SecurityPolicy } from "aws-cdk-lib/aws-apigateway";
 import { HttpMethod } from "aws-cdk-lib/aws-events";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { IAMRole } from "./iam";
 import { LogGroup } from "./logs";
 import { Resource } from "./resource";
+import { Secret } from "./secretsmanager";
 
 export class ApiGatewayRestApi extends Resource {
   constructor(template: AdvancedTemplate, props?: any) {
@@ -17,7 +18,7 @@ export class ApiGatewayRestApi extends Resource {
   }
 
   public withName(name: string) {
-    this.withProperty('Name', Match.stringLikeRegexp(name));
+    this.withProperty('Name', name);
     return this;
   }
 }
@@ -60,7 +61,7 @@ export class ApiGatewayStage extends Resource {
   }
 
   public withName(name: string) {
-    this.withProperty('StageName', Match.stringLikeRegexp(name));
+    this.withProperty('StageName', name);
     return this;
   }
 
@@ -100,6 +101,25 @@ export class ApiGatewayMethod extends Resource {
     this.withProperty('AuthorizationType', type);
     return this;
   }
+
+  public withNoAuthorization() {
+    return this.withAuthorization('NONE');
+  }
+
+  public withMockIntegration() {
+    this.withProperty('Integration', Match.objectLike({
+      Type: 'MOCK',
+    }));
+    return this;
+  }
+
+  public withHTTPIntegration(method: HttpMethod, type: string) {
+    this.withProperty('Integration', Match.objectLike({
+      IntegrationHttpMethod: method,
+      Type: type,
+    }));
+    return this;
+  }
 }
 
 export class ApiGatewayResource extends Resource {
@@ -123,6 +143,123 @@ export class ApiGatewayResource extends Resource {
 
   public withPath(path: string) {
     this.withProperty('PathPart', path);
+    return this;
+  }
+}
+
+export class ApiGatewayDomain extends Resource {
+  constructor(template: AdvancedTemplate, props?: any) {
+    super(CfnDomainName.CFN_RESOURCE_TYPE_NAME, template, props);
+  }
+
+  public withDomainName(domain: string) {
+    this.withProperty('DomainName', domain);
+    return this;
+  }
+
+  public withSecurityPolicy(policy: SecurityPolicy) {
+    this.withProperty('SecurityPolicy', policy);
+    return this;
+  }
+
+  public withEndpointType(type: EndpointType) {
+    this.withProperty('EndpointConfiguration', Match.objectLike({
+      Types: Match.arrayEquals([type]),
+    }));
+    return this;
+  }
+
+  public withRegionalCertificate(resource: Resource) {
+    this.withProperty('RegionalCertificateArn', resource.arn);
+    return this;
+  }
+}
+
+export class ApiGatewayBasePathMapping extends Resource {
+  constructor(template: AdvancedTemplate, props?: any) {
+    super(CfnBasePathMapping.CFN_RESOURCE_TYPE_NAME, template, props);
+  }
+
+  public ofApi(api: ApiGatewayRestApi) {
+    this.withProperty('RestApiId', api.ref);
+    return this;
+  }
+
+  public ofDomainName(domain: ApiGatewayDomain) {
+    this.withProperty('DomainName', domain.ref);
+    return this;
+  }
+
+  public toStage(stage: ApiGatewayStage) {
+    this.withProperty('Stage', stage.ref);
+    return this;
+  }
+}
+
+export class ApiGatewayApiKey extends Resource {
+  private apiStages: any[];
+
+  constructor(template: AdvancedTemplate, props?: any) {
+    super(CfnApiKey.CFN_RESOURCE_TYPE_NAME, template, props);
+    this.apiStages = [];
+  }
+
+  public withName(name: string) {
+    this.withProperty('Name', name);
+    return this;
+  }
+
+  public forApiStage(api: ApiGatewayRestApi, stage: ApiGatewayStage) {
+    this.apiStages.push(Match.objectLike({
+      RestApiId: api.ref,
+      StageName: stage.ref,
+    }));
+    this.withProperty('ApiStages', Match.arrayWith(this.apiStages));
+  }
+
+  public withValue(value: any) {
+    this.withProperty('Value', AdvancedMatcher.fnJoin(
+      Match.arrayWith(value),
+    ));
+    return this;
+  }
+
+  public withSecretValue(secret: Secret) {
+    return this.withValue(secret.ref);
+  }
+}
+
+export class ApiGatewayUsagePlan extends Resource {
+  private apiStages: any[];
+
+  constructor(template: AdvancedTemplate, props?: any) {
+    super(CfnUsagePlan.CFN_RESOURCE_TYPE_NAME, template, props);
+    this.apiStages = [];
+  }
+
+  public withApiStage(api: ApiGatewayRestApi, stage: ApiGatewayStage) {
+    this.apiStages.push(Match.objectLike({
+      ApiId: api.ref,
+      Stage: stage.ref,
+    }));
+    this.withProperty('ApiStages', Match.arrayWith(this.apiStages));
+    return this;
+  }
+}
+
+export class ApiGatewayUsagePlanKey extends Resource {
+  constructor(template: AdvancedTemplate, props?: any) {
+    super(CfnUsagePlanKey.CFN_RESOURCE_TYPE_NAME, template, props);
+  }
+
+  public ofUsagePlan(plan: ApiGatewayUsagePlan) {
+    this.withProperty('UsagePlanId', plan.ref);
+    return this;
+  }
+
+  public withApiKey(apiKey: ApiGatewayApiKey) {
+    this.withProperty('KeyId', apiKey.ref);
+    this.withProperty('KeyType', 'API_KEY');
     return this;
   }
 }

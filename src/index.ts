@@ -12,6 +12,7 @@ export * from './logs';
 export * from './resource';
 export * from './route53';
 export * from './s3';
+export * from './secretsmanager';
 export * from './ssm';
 export * from './types';
 export * from './wafv2';

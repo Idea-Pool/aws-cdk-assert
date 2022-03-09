@@ -42,7 +42,7 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withAliases(aliases: string[]) {
-    this.props.DistributionConfig.Aliases = Match.arrayWith(aliases);
+    this.propertiesMatcher.DistributionConfig.Aliases = Match.arrayWith(aliases);
     return this;
   }
 
@@ -53,7 +53,7 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withFunctionAssociation(fn: CloudFrontFunction, eventType?: FunctionEventType) {
-    this.props.DistributionConfig.DefaultCacheBehavior = Match.objectLike({
+    this.propertiesMatcher.DistributionConfig.DefaultCacheBehavior = Match.objectLike({
       FunctionAssociations: Match.arrayWith([
         Match.objectLike({
           EventType: eventType || FunctionEventType.VIEWER_REQUEST,
@@ -70,7 +70,7 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withCertificate(requestorResource: Resource) {
-    this.props.DistributionConfig.ViewerCertificate = Match.objectLike({
+    this.propertiesMatcher.DistributionConfig.ViewerCertificate = Match.objectLike({
       AcmCertificateArn: requestorResource.arn,
     });
     return this;
@@ -83,9 +83,9 @@ export class CloudFrontDistribution extends RemovableResource {
    */
   public withWebACL(webACLId: any) {
     if (webACLId instanceof WafV2WebACL) {
-      this.props.DistributionConfig.WebACLId = AdvancedMatcher.fnGetAtt(webACLId.id, "Id");
+      this.propertiesMatcher.DistributionConfig.WebACLId = AdvancedMatcher.fnGetAtt(webACLId.id, "Id");
     } else {
-      this.props.DistributionConfig.WebACLId = webACLId;
+      this.propertiesMatcher.DistributionConfig.WebACLId = webACLId;
     }
     return this;
   }
@@ -96,11 +96,43 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withPublicS3BucketOrigin(s3Bucket: S3Bucket) {
-    this.props.DistributionConfig.Origins = [
+    this.propertiesMatcher.DistributionConfig.Origins = [
       Match.objectLike({
         DomainName: AdvancedMatcher.s3BucketWebsiteURL(s3Bucket),
       })
     ];
+    return this;
+  }
+
+  public withHttpVersion(version: string) {
+    this.propertiesMatcher.DistributionConfig.HttpVersion = version;
+    return this;
+  }
+
+  public withOrigin(originConfig: {
+    protocolPolicy?: string,
+    sslProtocol?: string,
+    domain?: any,
+    id?: string,
+    path?: string,
+  } = {}) {
+    const origin: any = {
+      CustomOriginConfig: {
+        OriginProtocolPolicy: Match.stringLikeRegexp(originConfig.protocolPolicy || "https-only"),
+        OriginSSLProtocol: Match.arrayWith([
+          Match.stringLikeRegexp(originConfig.sslProtocol || "TLSv1.2")
+        ])
+      }
+    };
+    if (originConfig.id) {
+      origin.CustomOriginConfig.Id = Match.stringLikeRegexp(originConfig.id);
+    }
+    if (originConfig.path) {
+      origin.CustomOriginConfig.OriginPath = Match.stringLikeRegexp(originConfig.path);
+    }
+    this.propertiesMatcher.DistributionConfig.Origins = Match.arrayWith([
+      Match.objectLike(origin)
+    ]);
     return this;
   }
 }
