@@ -10,7 +10,7 @@
     "copyToDist": "copyfiles -f *.md package.json dist",
     "typedoc": "typedoc",
     "clean": "rimraf ./dist ./docs ./reports ./coverage",
-    "test": "cross-env JEST_JUNIT_OUTPUT_DIR=./reports jest --coverage",
+    "test": "cross-env JEST_JUNIT_OUTPUT_DIR=./reports jest --coverage --detectOpenHandles",
     "lint": "eslint . --ext .ts --fix",
     "compile": "tsc && npm run lint"
   },

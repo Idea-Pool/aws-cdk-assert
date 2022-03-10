@@ -114,7 +114,7 @@ export class Resource {
    *              the existence of the property.
    * @returns 
    */
-  public withRootProperty(key: string, value: any) {
+  public withRootProperty(key: string, value?: any) {
     if (!this.definitionMatcher) {
       this.definitionMatcher = {};
     }
@@ -235,7 +235,7 @@ export class Resource {
    * @throws {AssertionError} if the number of the matching resources is not the expected.
    */
   public countIs(count: number): void {
-    this.assert(this.count() === count, 'Resource cound does not match!');
+    this.assert(this.count() === count, 'Resource count does not match!');
   }
 
   /**

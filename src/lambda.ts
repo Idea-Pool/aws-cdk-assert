@@ -1,6 +1,5 @@
 import { Match } from "aws-cdk-lib/assertions";
 import { CfnFunction, CfnPermission, Runtime } from "aws-cdk-lib/aws-lambda";
-import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { IAMRole } from "./iam";
 import { RemovableResource, Resource } from "./resource";
@@ -86,28 +85,63 @@ export class LambdaFunction extends RemovableResource {
   }
 }
 
+/**
+ * A test construct representing a Lambda Permission resource.
+ * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_lambda.CfnPermission.html}
+ */
 export class LambdaPermission extends Resource {
   constructor(template: AdvancedTemplate, props?: any) {
     super(CfnPermission.CFN_RESOURCE_TYPE_NAME, template, props);
   }
 
+  /**
+   * Sets a matching action for the resource.
+   * @param action The whole or a partial action to match.
+   * @returns 
+   */
   public withAction(action: string) {
     this.withProperty('Action', action);
     return this;
   }
 
+  /**
+   * Sets a matching principal for the resource.
+   * @param principal The whole or a partial principal to match.
+   * @returns 
+   */
   public withPrincipal(principal: string) {
     this.withProperty('Principal', principal);
     return this;
   }
 
-  public withSource(...parts: any[]) {
-    this.withProperty('SourceArn', AdvancedMatcher.fnJoin([...parts]));
+  /**
+   * Sets matching source ARN for the permission resource
+   * @param arn The exact arn or matcher for it.
+   * @returns 
+   */
+  public withSourceArn(arn: any) {
+    this.withProperty('SourceArn', arn);
     return this;
   }
 
+  /**
+   * Sets matching source account for the permission resource
+   * @param account The exact account or matcher for it.
+   * @returns 
+   */
+  public withSourceAccount(account: any) {
+    this.withProperty('SourceAccount', account);
+    return this;
+  }
+
+
+  /**
+   * Sets a matching Lambda Function for the resource
+   * @param lambda The lambda function resource.
+   * @returns 
+   */
   public withFunctionName(lambda: LambdaFunction) {
-    this.withProperty('FunctionName', lambda.arn);
+    this.withProperty('FunctionName', lambda.ref);
     return this;
   }
 }

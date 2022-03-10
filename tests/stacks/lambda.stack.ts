@@ -1,11 +1,10 @@
 import { Duration, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
-import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
-// import * as s3 from "aws-cdk-lib/aws-s3";
+import * as iam from "aws-cdk-lib/aws-iam";
 
-export class TestIAMStack extends Stack {
+export class TestLambdaStack extends Stack {
   constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
@@ -15,23 +14,7 @@ export class TestIAMStack extends Stack {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
     });
 
-    // IAM ROLE FOR CODEBUILD
-
-    const roleForCodeBuild = new iam.Role(this, id + 'CustomCodeBuildRole', {
-      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
-    });
-
-    // IAM SERVICE ROLE AND POLICY
-
-    const fn = new lambda.Function(this, id + 'Lambda', {
-      code: lambda.Code.fromInline("exports.handler = function () {}"),
-      handler: 'handler',
-      runtime: lambda.Runtime.NODEJS,
-      timeout: Duration.seconds(42),
-    });
-
-    fn.grantInvoke(roleForLambda);
-    fn.grantInvoke(roleForCodeBuild);
+    // TABLE 
 
     const table = new dynamodb.Table(this, id + 'Table', {
       partitionKey: {
@@ -40,7 +23,24 @@ export class TestIAMStack extends Stack {
       },
     });
 
-    table.grantReadWriteData(roleForLambda);
+    // LAMBDA FUNCTION
+
+    const fn = new lambda.Function(this, id + 'Lambda', {
+      code: lambda.Code.fromInline("exports.handler = function () {}"),
+      handler: 'handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      timeout: Duration.seconds(42),
+      environment: {
+        ARN: table.tableArn,
+        STRING: 'STRING',
+        MATCHER: 'some string',
+        OBJECT: table.tableArn,
+      }
+    });
+
+    fn.grantInvoke(roleForLambda);
+
+    // LAMBDA PERMISSION
 
     new lambda.CfnPermission(this, id + 'Permission', {
       action: 'lambda:InvokeFunction',

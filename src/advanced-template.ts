@@ -223,46 +223,101 @@ export class AdvancedTemplate {
     return new RemovableResource(type, this, props);
   }
 
+  /**
+   * Creates an API Gateway Account test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayAccount(props?: any): ApiGatewayAccount {
     return new ApiGatewayAccount(this, props);
   }
 
+  /**
+   * Creates an API Gateway API Key test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayApiKey(props?: any): ApiGatewayApiKey {
     return new ApiGatewayApiKey(this, props);
   }
 
+  /**
+   * Creates an API Gateway Base Path Mapping test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayBasePathMapping(props?: any): ApiGatewayBasePathMapping {
     return new ApiGatewayBasePathMapping(this, props);
   }
 
+  /**
+   * Creates an API Gateway Deployment test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayDeployment(props?: any): ApiGatewayDeployment {
     return new ApiGatewayDeployment(this, props);
   }
 
+  /**
+   * Creates an API Gateway Domain test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayDomain(props?: any): ApiGatewayDomain {
     return new ApiGatewayDomain(this, props);
   }
 
+  /**
+   * Creates an API Gateway Method test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayMethod(props?: any): ApiGatewayMethod {
     return new ApiGatewayMethod(this, props);
   }
 
+  /**
+   * Creates an API Gateway Resource test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayResource(props?: any): ApiGatewayResource {
     return new ApiGatewayResource(this, props);
   }
 
+  /**
+   * Creates an API Gateway REST API test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayRestApi(props?: any): ApiGatewayRestApi {
     return new ApiGatewayRestApi(this, props);
   }
 
+  /**
+   * Creates an API Gateway Stage test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayStage(props?: any): ApiGatewayStage {
     return new ApiGatewayStage(this, props);
   }
 
+  /**
+   * Creates an API Gateway Usage Plan test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayUsagePlan(props?: any): ApiGatewayUsagePlan {
     return new ApiGatewayUsagePlan(this, props);
   }
 
+  /**
+   * Creates an API Gateway Usage Plan Key test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public apiGatewayUsagePlanKey(props?: any): ApiGatewayUsagePlanKey {
     return new ApiGatewayUsagePlanKey(this, props);
   }
@@ -357,6 +412,11 @@ export class AdvancedTemplate {
     return new LambdaFunction(this, props);
   }
 
+  /**
+   * Creates a Lambda Permission test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public lambdaPermission(props?: any): LambdaPermission {
     return new LambdaPermission(this, props);
   }
@@ -406,6 +466,11 @@ export class AdvancedTemplate {
     return new S3BucketPolicy(this, props);
   }
 
+  /**
+   * Creates a SecretsManager Secret test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
   public secret(props?: any): Secret {
     return new Secret(this, props);
   }
