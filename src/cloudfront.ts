@@ -1,5 +1,5 @@
 import { Match } from "aws-cdk-lib/assertions";
-import { CfnDistribution, CfnFunction, FunctionEventType } from "aws-cdk-lib/aws-cloudfront";
+import { CfnDistribution, CfnFunction, FunctionEventType, HttpVersion, OriginProtocolPolicy, OriginSslPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { RemovableResource, Resource } from "./resource";
@@ -98,41 +98,66 @@ export class CloudFrontDistribution extends RemovableResource {
   public withPublicS3BucketOrigin(s3Bucket: S3Bucket) {
     this.propertiesMatcher.DistributionConfig.Origins = [
       Match.objectLike({
-        DomainName: AdvancedMatcher.s3BucketWebsiteURL(s3Bucket),
+        DomainName: s3Bucket.websiteUrl,
       })
     ];
     return this;
   }
 
-  public withHttpVersion(version: string) {
+  /**
+   * Sets a matching HTTP version for the resource
+   * @param version The matching HTTP version
+   * @returns 
+   */
+  public withHttpVersion(version: HttpVersion) {
     this.propertiesMatcher.DistributionConfig.HttpVersion = version;
     return this;
   }
 
+  /**
+   * Sets a matching Origin configuration
+   * @param originConfig The matching origin configuration
+   * @returns 
+   */
   public withOrigin(originConfig: {
-    protocolPolicy?: string,
-    sslProtocol?: string,
+    protocolPolicy?: OriginProtocolPolicy,
+    sslProtocol?: OriginSslPolicy,
     domain?: any,
     id?: string,
     path?: string,
   } = {}) {
-    const origin: any = {
-      CustomOriginConfig: {
-        OriginProtocolPolicy: Match.stringLikeRegexp(originConfig.protocolPolicy || "https-only"),
-        OriginSSLProtocol: Match.arrayWith([
-          Match.stringLikeRegexp(originConfig.sslProtocol || "TLSv1.2")
-        ])
-      }
-    };
-    if (originConfig.id) {
-      origin.CustomOriginConfig.Id = Match.stringLikeRegexp(originConfig.id);
+    const origin: any = {};
+    if (originConfig.protocolPolicy) {
+      origin.CustomOriginConfig = origin.CustomOriginConfig || {};
+      origin.CustomOriginConfig.OriginProtocolPolicy = originConfig.protocolPolicy;
+    }
+    if (originConfig.sslProtocol) {
+      origin.CustomOriginConfig = origin.CustomOriginConfig || {};
+      origin.CustomOriginConfig.OriginSSLProtocols = Match.arrayWith([
+        originConfig.sslProtocol
+      ]);
     }
     if (originConfig.path) {
+      origin.CustomOriginConfig = origin.CustomOriginConfig || {};
       origin.CustomOriginConfig.OriginPath = Match.stringLikeRegexp(originConfig.path);
     }
-    this.propertiesMatcher.DistributionConfig.Origins = Match.arrayWith([
-      Match.objectLike(origin)
-    ]);
+    if (originConfig.domain) {
+      if (typeof originConfig.domain === 'string') {
+        origin.DomainName = Match.stringLikeRegexp(originConfig.domain);
+      } else {
+        origin.DomainName = originConfig.domain;
+      }
+    }
+    if (originConfig.id) {
+      origin.Id = Match.stringLikeRegexp(originConfig.id);
+    }
+    if (Object.keys(origin).length) {
+      this.propertiesMatcher.DistributionConfig.Origins = Match.arrayWith([
+        Match.objectLike(origin)
+      ]);
+    } else {
+      this.propertiesMatcher.DistributionConfig.Origins = Match.anyValue();
+    }
     return this;
   }
 }
