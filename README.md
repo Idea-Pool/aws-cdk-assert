@@ -6,11 +6,21 @@
 
 This tool gives handy utilities to test AWS CDK Stack, with predefined test constructs for certain CDK constructs.
 
-
 The tool currently contains the following test constructs:
 
 | Service        | Construct                      | CloudFormation Type                   |
 | :------------- | :----------------------------- | :------------------------------------ |
+| ApiGateway     | `ApiGatewayRestApi`            | `AWS::ApiGateway::RestApi`            |
+| ApiGateway     | `ApiGatewayAccount`            | `AWS::ApiGateway::Account`            |
+| ApiGateway     | `ApiGatewayDeployment`         | `AWS::ApiGateway::Deployment`         |
+| ApiGateway     | `ApiGatewayStage`              | `AWS::ApiGateway::Stage`              |
+| ApiGateway     | `ApiGatewayMethod`             | `AWS::ApiGateway::Method`             |
+| ApiGateway     | `ApiGatewayResource`           | `AWS::ApiGateway::Resource`           |
+| ApiGateway     | `ApiGatewayDomain`             | `AWS::ApiGateway::DomainName`         |
+| ApiGateway     | `ApiGatewayBasePathMapping`    | `AWS::ApiGateway::BasePathMapping`    |
+| ApiGateway     | `ApiGatewayApiKey`             | `AWS::ApiGateway::ApiKey`             |
+| ApiGateway     | `ApiGatewayUsagePlan`          | `AWS::ApiGateway::UsagePlan`          |
+| ApiGateway     | `ApiGatewayUsagePlanKey`       | `AWS::ApiGateway::UsagePlanKey`       |
 | CloudFormation | `CloudFormationCustomResource` | `AWS::CloudFormation::CustomResource` |
 | CloudFront     | `CloudFrontDistribution`       | `AWS::CloudFront::Distribution`       |
 | CloudFront     | `CloudFrontFunction`           | `AWS::CloudFront::Function`           |
@@ -21,10 +31,13 @@ The tool currently contains the following test constructs:
 | IAM            | `IAMRole`                      | `AWS::IAM::Role`                      |
 | IAM            | `IAMPolicy`                    | `AWS::IAM::Policy`                    |
 | Lambda         | `LambdaFunction`               | `AWS::Lambda::Function`               |
+| Lambda         | `LambdaPermission`             | `AWS::Lambda::Permission`             |
+| Logs           | `LogGroup`                     | `AWS::Logs::LogGroup`                 |
 | Route53        | `Route53HostedZone`            | `AWS::Route53::HostedZone`            |
 | Route53        | `Route53RecordSet`             | `AWS::Route53::RecordSet`             |
 | S3             | `S3Bucket`                     | `AWS::S3::Bucket`                     |
 | S3             | `S3BucketPolicy`               | `AWS::S3::BucketPolicy`               |
+| SecretsManager | `Secret`                       | `AWS::SecretsManager::Secret`         |
 | SSM            | `SSMParameter`                 | `AWS::SSM::Parameter`                 |
 | WAF v2         | `WafV2WebACL`                  | `AWS::WAFv2::WebACL`                  |
 
