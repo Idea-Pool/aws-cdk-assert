@@ -1,7 +1,7 @@
 import { App } from "aws-cdk-lib";
 import { EndpointType, IntegrationType, SecurityPolicy } from "aws-cdk-lib/aws-apigateway";
 import { HttpMethod } from "aws-cdk-lib/aws-events";
-import { AdvancedTemplate, ApiGatewayDeployment, ApiGatewayDomain, ApiGatewayResource, ApiGatewayRestApi, ApiGatewayStage, IAMRole } from "../src"
+import { AdvancedTemplate, ApiGatewayApiKey, ApiGatewayDeployment, ApiGatewayDomain, ApiGatewayResource, ApiGatewayRestApi, ApiGatewayStage, ApiGatewayUsagePlan, IAMRole } from "../src"
 import { TestAPIGatewayStack } from "./stacks/apigateway.stack";
 
 
@@ -12,6 +12,8 @@ describe("API Gateway", () => {
   let stage: ApiGatewayStage;
   let adminResource: ApiGatewayResource;
   let domain: ApiGatewayDomain;
+  let usagePlan: ApiGatewayUsagePlan;
+  let apiKey: ApiGatewayApiKey;
   let cwRole: IAMRole;
 
   beforeAll(() => {
@@ -23,9 +25,15 @@ describe("API Gateway", () => {
 
     template.debug();
 
-    api = template.apiGatewayRestApi();
-    deployment = template.apiGatewayDeployment();
-    stage = template.apiGatewayStage();
+    api = template
+      .apiGatewayRestApi()
+      .withName('REST');
+    deployment = template
+      .apiGatewayDeployment()
+      .ofApi(api);
+    stage = template
+      .apiGatewayStage()
+      .ofApi(api);
     adminResource = template
       .apiGatewayResource()
       .ofApi(api)
@@ -34,14 +42,16 @@ describe("API Gateway", () => {
     domain = template
       .apiGatewayDomain()
       .withDomainName('example.com');
+    usagePlan = template
+      .apiGatewayUsagePlan();
+    apiKey = template
+      .apiGatewayApiKey();
 
-    cwRole = template.iamRole().withPartialKey('CloudWatch');
+    cwRole = template.iamRole().withPartialKey('RESTCloudWatch');
   });
 
   test('Rest API is created', () => {
-    api
-      .withName('API')
-      .exists();
+    api.exists();
   });
 
   test('Rest API should have resource ID', () => {
@@ -56,14 +66,11 @@ describe("API Gateway", () => {
   });
 
   test('Deployment is created', () => {
-    deployment
-      .ofApi(api)
-      .exists();
+    deployment.exists();
   });
 
   test('Stage is created', () => {
     stage
-      .ofApi(api)
       .ofDeployment(deployment)
       .withName('stage')
       .withLogGroup(template.logGroup())
@@ -78,6 +85,26 @@ describe("API Gateway", () => {
       .withHttpMethod(HttpMethod.PATCH)
       .withNoAuthorization()
       .withHttpIntegration(HttpMethod.POST, IntegrationType.AWS_PROXY)
+      .exists();
+  });
+
+  test('Method is created for a resource', () => {
+    template
+      .apiGatewayMethod()
+      .ofApi(api)
+      .ofResource(adminResource)
+      .withHttpMethod(HttpMethod.DELETE)
+      .withNoAuthorization()
+      .withHttpIntegration(HttpMethod.POST, IntegrationType.AWS_PROXY)
+      .exists();
+  });
+
+  test('Mock method is created', () => {
+    template
+      .apiGatewayMethod()
+      .ofApi(api)
+      .ofResource(api)
+      .withMockIntegration()
       .exists();
   });
 
@@ -112,6 +139,18 @@ describe("API Gateway", () => {
           .withPartialKey('Certificate')
       )
       .exists();
+
+    template
+      .apiGatewayDomain()
+      .withDomainName('other.com')
+      .withSecurityPolicy(SecurityPolicy.TLS_1_2)
+      .withEndpointType(EndpointType.REGIONAL)
+      .withCertificate(
+        template.cloudFormationCustomResource()
+          .withPartialKey('Certificate')
+        , true
+      )
+      .exists();
   });
 
   test('Base path mapping is added', () => {
@@ -120,6 +159,28 @@ describe("API Gateway", () => {
       .ofApi(api)
       .ofDomainName(domain)
       .toStage(stage)
+      .exists();
+  });
+
+  test('API Key is added', () => {
+    apiKey
+      .forApiAndStage(api, stage)
+      .withName('APIKey')
+      .withSecretValue(template.secret())
+      .exists();
+  });
+
+  test('Usage Plan is created', () => {
+    usagePlan
+      .withApiStage(api, stage)
+      .exists();
+  });
+
+  test("Usage Plan Key is created", () => {
+    template
+      .apiGatewayUsagePlanKey()
+      .ofUsagePlan(usagePlan)
+      .withApiKey(apiKey)
       .exists();
   });
 });

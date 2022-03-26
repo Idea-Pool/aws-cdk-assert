@@ -1,5 +1,5 @@
 import { Stack, StackProps } from "aws-cdk-lib";
-import { ApiKey, EndpointType, LambdaIntegration, LogGroupLogDestination, RestApi, SecurityPolicy } from "aws-cdk-lib/aws-apigateway";
+import { EndpointType, LambdaIntegration, LogGroupLogDestination, RestApi, SecurityPolicy } from "aws-cdk-lib/aws-apigateway";
 import { DnsValidatedCertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
@@ -30,7 +30,7 @@ export class TestAPIGatewayStack extends Stack {
 
     // API
 
-    const api = new RestApi(this, id + 'API', {
+    const api = new RestApi(this, id + 'REST', {
       deployOptions: {
         stageName: 'stage',
         accessLogDestination: new LogGroupLogDestination(logs),
@@ -43,6 +43,19 @@ export class TestAPIGatewayStack extends Stack {
       }
     });
 
+    const otherApi = new RestApi(this, id + 'Other', {
+      deployOptions: {
+        stageName: 'stage',
+      },
+      domainName: {
+        certificate: cert,
+        domainName: 'other.com',
+        endpointType: EndpointType.REGIONAL,
+        securityPolicy: SecurityPolicy.TLS_1_2,
+      }
+    });
+    otherApi.root.addMethod('GET');
+
     // SECRET
 
     const secret = new Secret(this, id + 'SecretKey', {
@@ -52,7 +65,7 @@ export class TestAPIGatewayStack extends Stack {
 
     // API KEY
 
-    const key = new ApiKey(this, id + 'APIKey', {
+    const key = api.addApiKey(id + 'APIKey', {
       apiKeyName: 'APIKey',
       value: secret.secretValue.toString(),
     });

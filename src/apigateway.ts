@@ -368,11 +368,11 @@ export class ApiGatewayBasePathMapping extends Resource {
  * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway.CfnApiKey.html}
  */
 export class ApiGatewayApiKey extends Resource {
-  private apiStages: any[];
+  private stageKeys: any[];
 
   constructor(template: AdvancedTemplate, props?: any) {
     super(CfnApiKey.CFN_RESOURCE_TYPE_NAME, template, props);
-    this.apiStages = [];
+    this.stageKeys = [];
   }
 
   /**
@@ -391,11 +391,12 @@ export class ApiGatewayApiKey extends Resource {
    * @param stage The Stage to match
    */
   public forApiAndStage(api: ApiGatewayRestApi, stage: ApiGatewayStage) {
-    this.apiStages.push(Match.objectLike({
+    this.stageKeys.push(Match.objectLike({
       RestApiId: api.ref,
       StageName: stage.ref,
     }));
-    this.withProperty('ApiStages', Match.arrayWith(this.apiStages));
+    this.withProperty('StageKeys', Match.arrayWith(this.stageKeys));
+    return this;
   }
 
   /**
