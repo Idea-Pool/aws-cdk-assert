@@ -85,6 +85,10 @@ export class TestAPIGatewayStack extends Stack {
 
     // METHODS
 
+    const adminLambdaIntegration = new LambdaIntegration(adminLambda);
+
+    api.root.addMethod('PATCH', adminLambdaIntegration);
+
     const rootProxy = api.root.addProxy({
       anyMethod: false,
       defaultIntegration: new LambdaIntegration(proxyLambda, { proxy: true }),
@@ -92,7 +96,10 @@ export class TestAPIGatewayStack extends Stack {
     rootProxy.addMethod('GET');
 
     const adminRoute = api.root.addResource('admin');
-    adminRoute.addMethod('POST', new LambdaIntegration(adminLambda));
-    adminRoute.addMethod('DELETE', new LambdaIntegration(adminLambda));
+    adminRoute.addMethod('POST', adminLambdaIntegration);
+    adminRoute.addMethod('DELETE', adminLambdaIntegration);
+
+    const subAdminRoute = adminRoute.addResource('sub');
+    subAdminRoute.addMethod('GET', adminLambdaIntegration)
   }
 }

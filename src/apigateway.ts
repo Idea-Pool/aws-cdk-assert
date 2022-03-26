@@ -205,7 +205,7 @@ export class ApiGatewayMethod extends Resource {
    * @param type The integration type to match
    * @returns 
    */
-  public withHTTPIntegration(method: HttpMethod, type: IntegrationType) {
+  public withHttpIntegration(method: HttpMethod, type: IntegrationType) {
     this.withProperty('Integration', Match.objectLike({
       IntegrationHttpMethod: method,
       Type: type,
@@ -240,9 +240,9 @@ export class ApiGatewayResource extends Resource {
    */
   public ofParent(parent: ApiGatewayRestApi | ApiGatewayResource) {
     if (parent instanceof ApiGatewayRestApi) {
-      this.withProperty('ResourceId', parent.resourceId);
+      this.withProperty('ParentId', parent.resourceId);
     } else {
-      this.withProperty('ResourceId', parent.ref);
+      this.withProperty('ParentId', parent.ref);
     }
     return this;
   }
@@ -255,6 +255,14 @@ export class ApiGatewayResource extends Resource {
   public withPath(path: string) {
     this.withProperty('PathPart', path);
     return this;
+  }
+
+  /**
+   * Sets a matching path for the resource as a proxy
+   * @returns 
+   */
+  public asProxy() {
+    return this.withPath('proxy');
   }
 }
 
@@ -300,12 +308,17 @@ export class ApiGatewayDomain extends Resource {
   }
 
   /**
-   * Sets a matching Certificate for regional endpoint
+   * Sets a matching Certificate for the endpoint
    * @param resource The certificate (or another resource) to match
+   * @param regional Whether the certificate is regional or not
    * @returns 
    */
-  public withRegionalCertificate(resource: Resource) {
-    this.withProperty('RegionalCertificateArn', resource.arn);
+  public withCertificate(resource: Resource, regional?: boolean) {
+    if (regional) {
+      this.withProperty('RegionalCertificateArn', resource.arn);
+    } else {
+      this.withProperty('CertificateArn', resource.arn);
+    }
     return this;
   }
 }

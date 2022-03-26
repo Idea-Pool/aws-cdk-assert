@@ -15,7 +15,7 @@ describe("CloudFront", () => {
     });
     template = AdvancedTemplate.fromStack(stack);
 
-    template.debug();
+    // template.debug();
 
     distribution = template.cloudFrontDistribution();
   });
