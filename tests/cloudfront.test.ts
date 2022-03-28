@@ -1,4 +1,5 @@
 import { App } from "aws-cdk-lib";
+import { HttpVersion, OriginProtocolPolicy, OriginSslPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { AdvancedTemplate, CloudFrontDistribution, WebACLScope } from "../src"
 import { TestCloudFrontStack } from "./stacks/cloudfront.stack";
 
@@ -55,6 +56,29 @@ describe("CloudFront", () => {
 
     distribution.withFunctionAssociation(fn).exists();
   });
+
+  test('CloudFront with Origin config', () => {
+    distribution
+      .withOrigin()
+      .exists();
+  });
+
+  test('CloudFront with specific Origin config', () => {
+    distribution
+      .withOrigin({
+        protocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
+        sslProtocol: OriginSslPolicy.TLS_V1_2,
+        domain: template.s3Bucket().websiteUrl,
+        id: 'DistributionOrigin',
+      })
+      .exists();
+  });
+
+  test('HTTP version is set', () => {
+    distribution
+      .withHttpVersion(HttpVersion.HTTP2)
+      .exists();
+  })
 
   test('WebACL is associated', () => {
     const acl = template

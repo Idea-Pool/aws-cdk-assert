@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.1.0
+
+### Added
+
+| Service        | Construct                   | CloudFormation Type                |
+| :------------- | :-------------------------- | :--------------------------------- |
+| ApiGateway     | `ApiGatewayRestApi`         | `AWS::ApiGateway::RestApi`         |
+| ApiGateway     | `ApiGatewayAccount`         | `AWS::ApiGateway::Account`         |
+| ApiGateway     | `ApiGatewayDeployment`      | `AWS::ApiGateway::Deployment`      |
+| ApiGateway     | `ApiGatewayStage`           | `AWS::ApiGateway::Stage`           |
+| ApiGateway     | `ApiGatewayMethod`          | `AWS::ApiGateway::Method`          |
+| ApiGateway     | `ApiGatewayResource`        | `AWS::ApiGateway::Resource`        |
+| ApiGateway     | `ApiGatewayDomain`          | `AWS::ApiGateway::DomainName`      |
+| ApiGateway     | `ApiGatewayBasePathMapping` | `AWS::ApiGateway::BasePathMapping` |
+| ApiGateway     | `ApiGatewayApiKey`          | `AWS::ApiGateway::ApiKey`          |
+| ApiGateway     | `ApiGatewayUsagePlan`       | `AWS::ApiGateway::UsagePlan`       |
+| ApiGateway     | `ApiGatewayUsagePlanKey`    | `AWS::ApiGateway::UsagePlanKey`    |
+| Lambda         | `LambdaPermission`          | `AWS::Lambda::Permission`          |
+| Logs           | `LogGroup`                  | `AWS::Logs::LogGroup`              |
+| SecretsManager | `Secret`                    | `AWS::SecretsManager::Secret`      |
+
 ## 1.0.1
 
 Package transferred to [Idea Pool](https://github.com/Idea-Pool)

@@ -1,5 +1,5 @@
 import { Match } from "aws-cdk-lib/assertions";
-import { CfnDistribution, CfnFunction, FunctionEventType } from "aws-cdk-lib/aws-cloudfront";
+import { CfnDistribution, CfnFunction, FunctionEventType, HttpVersion, OriginProtocolPolicy, OriginSslPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { RemovableResource, Resource } from "./resource";
@@ -42,7 +42,7 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withAliases(aliases: string[]) {
-    this.props.DistributionConfig.Aliases = Match.arrayWith(aliases);
+    this.propertiesMatcher.DistributionConfig.Aliases = Match.arrayWith(aliases);
     return this;
   }
 
@@ -53,7 +53,7 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withFunctionAssociation(fn: CloudFrontFunction, eventType?: FunctionEventType) {
-    this.props.DistributionConfig.DefaultCacheBehavior = Match.objectLike({
+    this.propertiesMatcher.DistributionConfig.DefaultCacheBehavior = Match.objectLike({
       FunctionAssociations: Match.arrayWith([
         Match.objectLike({
           EventType: eventType || FunctionEventType.VIEWER_REQUEST,
@@ -70,8 +70,8 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withCertificate(requestorResource: Resource) {
-    this.props.DistributionConfig.ViewerCertificate = Match.objectLike({
-      AcmCertificateArn: AdvancedMatcher.arn(requestorResource),
+    this.propertiesMatcher.DistributionConfig.ViewerCertificate = Match.objectLike({
+      AcmCertificateArn: requestorResource.arn,
     });
     return this;
   }
@@ -83,9 +83,9 @@ export class CloudFrontDistribution extends RemovableResource {
    */
   public withWebACL(webACLId: any) {
     if (webACLId instanceof WafV2WebACL) {
-      this.props.DistributionConfig.WebACLId = AdvancedMatcher.fnGetAtt(webACLId.id, "Id");
+      this.propertiesMatcher.DistributionConfig.WebACLId = AdvancedMatcher.fnGetAtt(webACLId.id, "Id");
     } else {
-      this.props.DistributionConfig.WebACLId = webACLId;
+      this.propertiesMatcher.DistributionConfig.WebACLId = webACLId;
     }
     return this;
   }
@@ -96,11 +96,68 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withPublicS3BucketOrigin(s3Bucket: S3Bucket) {
-    this.props.DistributionConfig.Origins = [
+    this.propertiesMatcher.DistributionConfig.Origins = [
       Match.objectLike({
-        DomainName: AdvancedMatcher.s3BucketWebsiteURL(s3Bucket),
+        DomainName: s3Bucket.websiteUrl,
       })
     ];
+    return this;
+  }
+
+  /**
+   * Sets a matching HTTP version for the resource
+   * @param version The matching HTTP version
+   * @returns 
+   */
+  public withHttpVersion(version: HttpVersion) {
+    this.propertiesMatcher.DistributionConfig.HttpVersion = version;
+    return this;
+  }
+
+  /**
+   * Sets a matching Origin configuration
+   * @param originConfig The matching origin configuration
+   * @returns 
+   */
+  public withOrigin(originConfig: {
+    protocolPolicy?: OriginProtocolPolicy,
+    sslProtocol?: OriginSslPolicy,
+    domain?: any,
+    id?: string,
+    path?: string,
+  } = {}) {
+    const origin: any = {};
+    if (originConfig.protocolPolicy) {
+      origin.CustomOriginConfig = origin.CustomOriginConfig || {};
+      origin.CustomOriginConfig.OriginProtocolPolicy = originConfig.protocolPolicy;
+    }
+    if (originConfig.sslProtocol) {
+      origin.CustomOriginConfig = origin.CustomOriginConfig || {};
+      origin.CustomOriginConfig.OriginSSLProtocols = Match.arrayWith([
+        originConfig.sslProtocol
+      ]);
+    }
+    if (originConfig.path) {
+      origin.CustomOriginConfig = origin.CustomOriginConfig || {};
+      origin.CustomOriginConfig.OriginPath = Match.stringLikeRegexp(originConfig.path);
+    }
+    if (originConfig.domain) {
+      if (typeof originConfig.domain === 'string') {
+        origin.DomainName = Match.stringLikeRegexp(originConfig.domain);
+      } else {
+        origin.DomainName = originConfig.domain;
+      }
+    }
+    if (originConfig.id) {
+      origin.Id = Match.stringLikeRegexp(originConfig.id);
+    }
+    if (Object.keys(origin).length) {
+      this.propertiesMatcher.DistributionConfig.Origins = Match.arrayWith([
+        Match.objectLike(origin)
+      ]);
+    } else {
+      this.propertiesMatcher.DistributionConfig.Origins = Match.anyValue();
+    }
     return this;
   }
 }

@@ -11,9 +11,12 @@ import { DynamoDBTable } from "./dynamodb";
 import { SSMParameter } from "./ssm";
 import { WafV2WebACL } from "./wafv2";
 import { IAMPolicy, IAMRole } from "./iam";
-import { LambdaFunction } from "./lambda";
+import { LambdaFunction, LambdaPermission } from "./lambda";
 import { Resource } from "./resource";
 import { RemovableResource } from ".";
+import { LogGroup } from "./logs";
+import { ApiGatewayAccount, ApiGatewayApiKey, ApiGatewayBasePathMapping, ApiGatewayDeployment, ApiGatewayDomain, ApiGatewayMethod, ApiGatewayResource, ApiGatewayRestApi, ApiGatewayStage, ApiGatewayUsagePlan, ApiGatewayUsagePlanKey } from "./apigateway";
+import { Secret } from "./secretsmanager";
 
 /**
  * CloudFormation/CDK template assertion class, 
@@ -203,7 +206,7 @@ export class AdvancedTemplate {
   /**
    * Creates a general Resource test construct with the passed type and properties.
    * @param type The CloudFormation resource type
-   * @param props The properties of the extected test construct
+   * @param props The properties of the expected test construct
    * @returns 
    */
   public resource(type: string, props?: any): Resource {
@@ -213,11 +216,110 @@ export class AdvancedTemplate {
   /**
    * Creates a general RemovableResource test construct with the passed type and properties.
    * @param type The CloudFormation resource type
-   * @param props The properties of the extected test construct
+   * @param props The properties of the expected test construct
    * @returns 
    */
   public removableResource(type: string, props?: any): RemovableResource {
     return new RemovableResource(type, this, props);
+  }
+
+  /**
+   * Creates an API Gateway Account test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayAccount(props?: any): ApiGatewayAccount {
+    return new ApiGatewayAccount(this, props);
+  }
+
+  /**
+   * Creates an API Gateway API Key test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayApiKey(props?: any): ApiGatewayApiKey {
+    return new ApiGatewayApiKey(this, props);
+  }
+
+  /**
+   * Creates an API Gateway Base Path Mapping test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayBasePathMapping(props?: any): ApiGatewayBasePathMapping {
+    return new ApiGatewayBasePathMapping(this, props);
+  }
+
+  /**
+   * Creates an API Gateway Deployment test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayDeployment(props?: any): ApiGatewayDeployment {
+    return new ApiGatewayDeployment(this, props);
+  }
+
+  /**
+   * Creates an API Gateway Domain test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayDomain(props?: any): ApiGatewayDomain {
+    return new ApiGatewayDomain(this, props);
+  }
+
+  /**
+   * Creates an API Gateway Method test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayMethod(props?: any): ApiGatewayMethod {
+    return new ApiGatewayMethod(this, props);
+  }
+
+  /**
+   * Creates an API Gateway Resource test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayResource(props?: any): ApiGatewayResource {
+    return new ApiGatewayResource(this, props);
+  }
+
+  /**
+   * Creates an API Gateway REST API test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayRestApi(props?: any): ApiGatewayRestApi {
+    return new ApiGatewayRestApi(this, props);
+  }
+
+  /**
+   * Creates an API Gateway Stage test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayStage(props?: any): ApiGatewayStage {
+    return new ApiGatewayStage(this, props);
+  }
+
+  /**
+   * Creates an API Gateway Usage Plan test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayUsagePlan(props?: any): ApiGatewayUsagePlan {
+    return new ApiGatewayUsagePlan(this, props);
+  }
+
+  /**
+   * Creates an API Gateway Usage Plan Key test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public apiGatewayUsagePlanKey(props?: any): ApiGatewayUsagePlanKey {
+    return new ApiGatewayUsagePlanKey(this, props);
   }
 
   /**
@@ -311,6 +413,24 @@ export class AdvancedTemplate {
   }
 
   /**
+   * Creates a Lambda Permission test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public lambdaPermission(props?: any): LambdaPermission {
+    return new LambdaPermission(this, props);
+  }
+
+  /**
+   * Creates a LogGroup test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public logGroup(props?: any): LogGroup {
+    return new LogGroup(this, props);
+  }
+
+  /**
    * Creates a Route53 HostedZone test construct with the passed Properties.
    * @param props The Properties of the expected test construct.
    * @returns 
@@ -344,6 +464,15 @@ export class AdvancedTemplate {
    */
   public s3BucketPolicy(props?: any): S3BucketPolicy {
     return new S3BucketPolicy(this, props);
+  }
+
+  /**
+   * Creates a SecretsManager Secret test construct with the passed Properties.
+   * @param props The Properties of the expected test construct.
+   * @returns 
+   */
+  public secret(props?: any): Secret {
+    return new Secret(this, props);
   }
 
   /**

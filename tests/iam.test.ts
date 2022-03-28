@@ -1,7 +1,7 @@
 import { App } from "aws-cdk-lib";
 import { Match } from "aws-cdk-lib/assertions";
 import { Effect } from "aws-cdk-lib/aws-iam";
-import { AdvancedMatcher, AdvancedTemplate, DynamoDBTable, IAMRole, LambdaFunction } from "../src"
+import { AdvancedTemplate, DynamoDBTable, IAMRole, LambdaFunction } from "../src"
 import { TestIAMStack } from "./stacks/iam.stack";
 
 
@@ -60,13 +60,13 @@ describe("IAM", () => {
       .usedByRole(roleForLambda)
       .withStatement(
         'lambda:InvokeFunction',
-        AdvancedMatcher.arn(fn),
+        fn.arn,
         Effect.ALLOW
       )
       .withStatement(
         ['dynamodb:Query', 'dynamodb:PutItem'],
         Match.arrayWith([
-          AdvancedMatcher.arn(table),
+          table.arn,
         ]),
       )
       .exists();
@@ -75,7 +75,7 @@ describe("IAM", () => {
     template
       .iamPolicy()
       .usedByRole(roleForCodeBuild)
-      .withStatement('lambda:InvokeFunction', AdvancedMatcher.arn(fn))
+      .withStatement('lambda:InvokeFunction', fn.arn)
       .exists();
   });
 });

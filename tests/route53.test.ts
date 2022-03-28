@@ -41,6 +41,16 @@ describe("Resource", () => {
       .exists();
   });
 
+  test('A record is created for api gateway', () => {
+    template
+      .route53RecordSet()
+      .inHostedZone(zone)
+      .withName('api')
+      .withRecordType(RecordType.A)
+      .withAliasToApiGatewayDomain(template.apiGatewayDomain())
+      .exists();
+  });
+
   test('Txt record is created', () => {
     template
       .route53RecordSet()

@@ -1,6 +1,6 @@
 {
   "name": "aws-cdk-assert",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "This tool gives handy utilities to test AWS CDK Stack.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -10,7 +10,7 @@
     "copyToDist": "copyfiles -f *.md package.json dist",
     "typedoc": "typedoc",
     "clean": "rimraf ./dist ./docs ./reports ./coverage",
-    "test": "cross-env JEST_JUNIT_OUTPUT_DIR=./reports jest --coverage",
+    "test": "cross-env JEST_JUNIT_OUTPUT_DIR=./reports jest --coverage --detectOpenHandles",
     "lint": "eslint . --ext .ts --fix",
     "compile": "tsc && npm run lint"
   },

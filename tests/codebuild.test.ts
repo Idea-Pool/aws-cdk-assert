@@ -1,5 +1,5 @@
 import { App } from "aws-cdk-lib";
-import { AdvancedMatcher, AdvancedTemplate, CodeBuildProject, IAMRole, S3Bucket } from "../src"
+import { AdvancedTemplate, CodeBuildProject, IAMRole, S3Bucket } from "../src"
 import { TestCodeBuildStack } from "./stacks/codebuild.stack";
 
 
@@ -35,7 +35,7 @@ describe("CodeBuild", () => {
     project
       .withEnvironmentVariable('DISTRIBUTION', 'DISTRIBUTION')
       .withEnvironmentVariable('BUCKET', bucket)
-      .withEnvironmentVariable('ROLE', AdvancedMatcher.arn(role))
+      .withEnvironmentVariable('ROLE', role.arn)
       .exists();
   });
 

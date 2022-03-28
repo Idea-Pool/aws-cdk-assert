@@ -1,6 +1,7 @@
 import assert = require("assert");
 import { RemovalPolicy } from "aws-cdk-lib";
 import { Match, Matcher } from "aws-cdk-lib/assertions";
+import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template";
 import { Dict, KeyAndProps } from "./types";
 
@@ -20,11 +21,11 @@ export class Resource {
   /**
    * @member The matching Properties of the resource.
    */
-  protected props: any;
+  protected propertiesMatcher: any;
   /**
    * @member The matching definition of the resource (including the Properties).
    */
-  protected config: Dict;
+  protected definitionMatcher: Dict;
   /**
    * @member The matching key of the resource.
    */
@@ -32,13 +33,17 @@ export class Resource {
   /**
    * @member The matching dependency keys of the resource (DependsOn).
    */
-  protected dependencyKeys: string[];
+  protected dependencyMatcher: string[];
+  /**
+   * @member The matching Metadata of the resource.
+   */
+  protected metadataMatcher: any;
 
   constructor(type: string, template: AdvancedTemplate, props: any) {
     this.type = type;
     this.template = template;
-    this.props = props;
-    this.dependencyKeys = [];
+    this.propertiesMatcher = props;
+    this.dependencyMatcher = [];
   }
 
   /**
@@ -54,29 +59,74 @@ export class Resource {
   /**
    * Sets/Overwrites a particular property in Properties.
    * @param key The key of the property.
-   * @param value The property's value, either exact or a Matcher.
+   * @param value The property's value, either a matching string, 
+   *              a Matcher, or not set to only match for
+   *              the existence of the property.
    * @returns 
    */
-  public withProperty(key: string, value: any) {
-    if (!this.props) {
-      this.props = {};
-      this.withRootProperty('Properties', this.props);
+  public withProperty(key: string, value?: any) {
+    if (!this.propertiesMatcher) {
+      this.propertiesMatcher = {};
     }
-    this.props[key] = value;
+    if (value) {
+      if (typeof value === 'string') {
+        this.propertiesMatcher[key] = Match.stringLikeRegexp(value);
+      } else {
+        this.propertiesMatcher[key] = value;
+      }
+    } else {
+      this.propertiesMatcher[key] = Match.anyValue();
+    }
+    this.withRootProperty('Properties', Match.objectLike(this.propertiesMatcher));
+    return this;
+  }
+
+  /**
+   * Sets/Overwrites a particular property in Metadata.
+   * @param key The key of the metadata.
+   * @param value The metadata's value, either a matching string, 
+   *              a Matcher, or not set to only match for
+   *              the existence of the property.
+   * @returns 
+   */
+  public withMetadata(key: string, value?: any) {
+    if (!this.metadataMatcher) {
+      this.metadataMatcher = {};
+    }
+    if (value) {
+      if (typeof value === 'string') {
+        this.metadataMatcher[key] = Match.stringLikeRegexp(value);
+      } else {
+        this.metadataMatcher[key] = value;
+      }
+    } else {
+      this.metadataMatcher[key] = Match.anyValue();
+    }
+    this.withRootProperty('Metadata', Match.objectLike(this.metadataMatcher));
     return this;
   }
 
   /**
    * Sets/Overwrites a particular property in the root definition.
    * @param key The key of the property.
-   * @param value The property's value, either exact or a Matcher.
+   * @param value The metadata's value, either a matching string, 
+   *              a Matcher, or not set to only match for
+   *              the existence of the property.
    * @returns 
    */
-  public withRootProperty(key: string, value: any) {
-    if (!this.config) {
-      this.config = {};
+  public withRootProperty(key: string, value?: any) {
+    if (!this.definitionMatcher) {
+      this.definitionMatcher = {};
     }
-    this.config[key] = value;
+    if (value) {
+      if (typeof value === 'string') {
+        this.definitionMatcher[key] = Match.stringLikeRegexp(value);
+      } else {
+        this.definitionMatcher[key] = value;
+      }
+    } else {
+      this.definitionMatcher[key] = Match.anyValue();
+    }
     return this;
   }
 
@@ -87,7 +137,7 @@ export class Resource {
    * @returns 
    */
   public find(): KeyAndProps {
-    const resources = this.template.findResources(this.type, this.config);
+    const resources = this.template.findResources(this.type, this.definitionMatcher);
     if (this.key) {
       for (const key in resources) {
         if (!key.toLowerCase().includes(this.key.toLowerCase())) {
@@ -131,6 +181,23 @@ export class Resource {
     return this.definition.Id;
   }
 
+  /**
+   * The metadata of the resource from the template.
+   */
+  public get metadata(): Dict {
+    return this.definition.Metadata;
+  }
+
+  /**
+   * The matcher for the ARN of the resource.
+   */
+  public get arn(): Matcher {
+    return AdvancedMatcher.arn(this);
+  }
+
+  /**
+   * The matcher for the Ref of the resource.
+   */
   public get ref(): Matcher {
     return Match.objectEquals({
       Ref: this.id,
@@ -168,7 +235,7 @@ export class Resource {
    * @throws {AssertionError} if the number of the matching resources is not the expected.
    */
   public countIs(count: number): void {
-    this.assert(this.count() === count, 'Resource cound does not match!');
+    this.assert(this.count() === count, 'Resource count does not match!');
   }
 
   /**
@@ -187,7 +254,7 @@ export class Resource {
    */
   public toDebugString(): string {
     return JSON.stringify({
-      config: this.config,
+      config: this.definitionMatcher,
       similarType: this.findSimilarType(),
     }, null, 2)
   }
@@ -227,8 +294,8 @@ export class Resource {
    * @returns 
    */
   public dependsOn(resource: Resource) {
-    this.dependencyKeys.push(resource.id);
-    this.withRootProperty('DependsOn', Match.arrayWith(this.dependencyKeys));
+    this.dependencyMatcher.push(resource.id);
+    this.withRootProperty('DependsOn', Match.arrayWith(this.dependencyMatcher));
     return this;
   }
 }

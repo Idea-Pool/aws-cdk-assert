@@ -41,7 +41,7 @@ export class S3BucketPolicy extends RemovableResource {
           Principal: { AWS: '*' },
           Resource: AdvancedMatcher.fnJoin(
             Match.arrayWith([
-              AdvancedMatcher.arn(this.s3Bucket)
+              this.s3Bucket.arn,
             ])
           )
         })
@@ -123,6 +123,17 @@ export class S3Bucket extends RemovableResource {
       }
     );
     return this;
+  }
+
+  /**
+   * Creates a matcher for the website URL of the bucket
+   */
+  get websiteUrl() {
+    return AdvancedMatcher.fnSelect(
+      AdvancedMatcher.fnSplit(
+        AdvancedMatcher.fnGetAtt(this.id, "WebsiteURL")
+      )
+    );
   }
 
   // TODO: withAutoDeleteObjects

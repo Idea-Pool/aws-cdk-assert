@@ -41,5 +41,16 @@ export class TestSSMStack extends Stack {
       parameterName: 'list',
       stringListValue: ['VALUE1', 'VALUE2'],
     });
+
+    // PARAMETER WITH METADATA
+
+    const param = new ssm.CfnParameter(this, id + 'Metadata', {
+      type: ssm.ParameterType.STRING,
+      value: 'VALUE',
+    });
+    param.addMetadata('STRING', 'some string');
+    param.addMetadata('MATCHER', 'other string');
+    param.addMetadata('OBJECT', { foo: 'bar' });
+
   }
 }

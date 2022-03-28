@@ -1,6 +1,5 @@
 import { Match, Matcher } from "aws-cdk-lib/assertions";
 import { Resource } from "./resource";
-import { S3Bucket } from "./s3";
 
 /**
  * Matchers to use to assert CloudFormation template.
@@ -61,19 +60,6 @@ export class AdvancedMatcher {
    */
   public static fnJoin(pattern: any): Matcher {
     return this.fn('Join', pattern);
-  }
-
-  /**
-   * Matches with the website URL of the S3 Bucket.
-   * @param s3Bucket The S3Bucket test construct.
-   * @returns 
-   */
-  public static s3BucketWebsiteURL(s3Bucket: S3Bucket): Matcher {
-    return this.fnSelect(
-      this.fnSplit(
-        this.fnGetAtt(s3Bucket.id, "WebsiteURL")
-      )
-    );
   }
 
   /**

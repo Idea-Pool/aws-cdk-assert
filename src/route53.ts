@@ -2,6 +2,7 @@ import { Match, Matcher } from "aws-cdk-lib/assertions";
 import { CfnHostedZone, CfnRecordSet, RecordType } from "aws-cdk-lib/aws-route53";
 import { AdvancedMatcher } from "./advanced-matcher";
 import { AdvancedTemplate } from "./advanced-template"
+import { ApiGatewayDomain } from "./apigateway";
 import { CloudFrontDistribution } from "./cloudfront";
 import { RemovableResource } from "./resource";
 
@@ -58,7 +59,7 @@ export class Route53RecordSet extends RemovableResource {
 
   /**
    * Sets a matching hosted zone ID for the RecordSet
-   * @param zone Either the hosted zone resource, a matcher or a matching zone Id.
+   * @param zone Either the hosted zone resource, a matcher, or a matching zone Id.
    * @returns 
    */
   /*
@@ -102,6 +103,18 @@ export class Route53RecordSet extends RemovableResource {
   public withAliasToCloudFront(distribution: CloudFrontDistribution) {
     this.withProperty('AliasTarget', Match.objectLike({
       DNSName: AdvancedMatcher.fnGetAtt(distribution.id, "DomainName"),
+    }));
+    return this;
+  }
+
+  /**
+   * Sets a matching ApiGateway DomainName target for the RecordSet
+   * @param domain The ApiGateway DomainName as the target
+   * @returns 
+   */
+  public withAliasToApiGatewayDomain(domain: ApiGatewayDomain) {
+    this.withProperty('AliasTarget', Match.objectLike({
+      DNSName: AdvancedMatcher.fnGetAtt(domain.id, "RegionalDomainName"),
     }));
     return this;
   }
