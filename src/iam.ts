@@ -112,7 +112,7 @@ export class IAMPolicy extends RemovableResource {
    * @returns 
    */
   public usedByRole(role: IAMRole) {
-    this.roles.push(role.ref);
+    this.roles.push(role.reference);
     this.withProperty('Roles', Match.arrayWith(this.roles));
     return this;
   }

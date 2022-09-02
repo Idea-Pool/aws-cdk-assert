@@ -45,7 +45,7 @@ export class Secret extends RemovableResource {
 
   /**
    * Adds a matching secret string name.
-   * @param value The whole or a partial name of the secret or a matcher.
+   * @param name The whole or a partial name of the secret or a matcher.
    * @returns 
    */
   public withName(name: string | Matcher) {

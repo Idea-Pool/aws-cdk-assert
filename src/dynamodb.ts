@@ -25,10 +25,10 @@ export class DynamoDBTable extends RemovableResource {
   /**
    * Sets a matching key of the table
    * @param key Either the whole or a partial name of the key of the table
-   * @param type The type of the key attribute
+   * @param attributeType The type of the key attribute
    * @returns 
    */
-  public withKey(key: string, type?: AttributeType) {
+  public withKey(key: string, attributeType?: AttributeType) {
     this.withProperty('KeySchema', Match.arrayWith([
       Match.objectLike({
         AttributeName: Match.stringLikeRegexp(key),
@@ -37,7 +37,7 @@ export class DynamoDBTable extends RemovableResource {
     this.withProperty('AttributeDefinitions', Match.arrayWith([
       Match.objectEquals({
         AttributeName: Match.stringLikeRegexp(key),
-        AttributeType: type || AttributeType.STRING,
+        AttributeType: attributeType || AttributeType.STRING,
       }),
     ]));
     return this;

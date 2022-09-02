@@ -4,8 +4,8 @@ import { AdvancedTemplate } from "./advanced-template";
 import { Resource, RemovableResource } from "./resource";
 
 export interface CodeBuildProjectTriggerEvent {
-  type: string;
-  pattern?: string;
+  readonly eventType: string;
+  readonly pattern?: string;
 }
 
 export enum CredentialAuthType {
@@ -102,14 +102,14 @@ export class CodeBuildProject extends RemovableResource {
 
   /**
    * Sets a matching source for the project
-   * @param type The source type to match (exact match)
+   * @param sourceType The source type to match (exact match)
    * @param location The whole or a partial location
    * @returns 
    */
-  public withSource(type: string, location: string) {
+  public withSource(sourceType: string, location: string) {
     this.source = this.source || {};
     this.source.Location = Match.stringLikeRegexp(location);
-    this.source.Type = type;
+    this.source.Type = sourceType;
 
     this.withProperty('Source', Match.objectLike(this.source));
     return this;
@@ -119,13 +119,13 @@ export class CodeBuildProject extends RemovableResource {
    * Sets a matching environment variable for the project
    * @param name The whole of a partial name of the environment variable
    * @param value The value of the environment variable (resource, string, or a matcher)
-   * @param type The type of the environment variable
+   * @param envVariableType The type of the environment variable
    * @returns 
    */
-  public withEnvironmentVariable(name: string, value?: any, type?: BuildEnvironmentVariableType) {
+  public withEnvironmentVariable(name: string, value?: any, envVariableType?: BuildEnvironmentVariableType) {
     const environmentVariable: any = {
       Name: Match.stringLikeRegexp(name),
-      Type: type || BuildEnvironmentVariableType.PLAINTEXT,
+      Type: envVariableType || BuildEnvironmentVariableType.PLAINTEXT,
     };
     if (value) {
       if (value instanceof Resource) {
@@ -161,7 +161,7 @@ export class CodeBuildProject extends RemovableResource {
    */
   public withTriggers(events: CodeBuildProjectTriggerEvent[], webhook = true) {
     const eventMatchers = events.map(e => {
-      const filter: any = { Type: e.type };
+      const filter: any = { Type: e.eventType };
       if (e.pattern) {
         filter.Pattern = Match.stringLikeRegexp(e.pattern);
       }
@@ -178,21 +178,21 @@ export class CodeBuildProject extends RemovableResource {
 
   /**
    * Sets a matching artifact for the project
-   * @param type The type of the artifact (e.g., S3)
+   * @param artifactType The type of the artifact (e.g., S3)
    * @param location The location of the artifact (resource, string, or a matcher)
    * @param encryption Whether encryption is enabled for the artifact
    * @param packaging Whether packaging is enabled for the artifact
    * @returns 
    */
-  public withArtifact(type: string, location?: any, encryption?: boolean, packaging?: boolean) {
+  public withArtifact(artifactType: string, location?: any, encryption?: boolean, packaging?: boolean) {
     const artifact: any = {
       EncryptionDisabled: !encryption,
-      Type: type || "S3",
+      Type: artifactType || "S3",
       Packaging: packaging || "NONE",
     };
     if (location) {
       if (location instanceof Resource) {
-        artifact.Location = location.ref;
+        artifact.Location = location.reference;
       } else if (typeof location === "string") {
         artifact.Location = Match.stringLikeRegexp(location);
       } else {

@@ -70,7 +70,7 @@ export class ApiGatewayDeployment extends Resource {
    * @returns 
    */
   public ofApi(api: ApiGatewayRestApi) {
-    this.withProperty('RestApiId', api.ref);
+    this.withProperty('RestApiId', api.reference);
     return this;
   }
 }
@@ -90,7 +90,7 @@ export class ApiGatewayStage extends Resource {
    * @returns 
    */
   public ofApi(api: ApiGatewayRestApi) {
-    this.withProperty('RestApiId', api.ref);
+    this.withProperty('RestApiId', api.reference);
     return this;
   }
 
@@ -100,7 +100,7 @@ export class ApiGatewayStage extends Resource {
    * @returns 
    */
   public ofDeployment(deployment: ApiGatewayDeployment) {
-    this.withProperty('DeploymentId', deployment.ref);
+    this.withProperty('DeploymentId', deployment.reference);
     return this;
   }
 
@@ -142,7 +142,7 @@ export class ApiGatewayMethod extends Resource {
    * @returns 
    */
   public ofApi(api: ApiGatewayRestApi) {
-    this.withProperty('RestApiId', api.ref);
+    this.withProperty('RestApiId', api.reference);
     return this;
   }
 
@@ -165,18 +165,18 @@ export class ApiGatewayMethod extends Resource {
     if (resource instanceof ApiGatewayRestApi) {
       this.withProperty('ResourceId', resource.resourceId);
     } else {
-      this.withProperty('ResourceId', resource.ref);
+      this.withProperty('ResourceId', resource.reference);
     }
     return this;
   }
 
   /**
    * Sets the matching authorization type for the method
-   * @param type The authorization type to match
+   * @param authorizationType The authorization type to match
    * @returns 
    */
-  public withAuthorization(type: AuthorizationType) {
-    this.withProperty('AuthorizationType', type);
+  public withAuthorization(authorizationType: AuthorizationType) {
+    this.withProperty('AuthorizationType', authorizationType);
     return this;
   }
 
@@ -202,13 +202,13 @@ export class ApiGatewayMethod extends Resource {
   /**
    * Sets a matching HTTP integration
    * @param method The HTTP method to match
-   * @param type The integration type to match
+   * @param integrationType The integration type to match
    * @returns 
    */
-  public withHttpIntegration(method: HttpMethod, type: IntegrationType) {
+  public withHttpIntegration(method: HttpMethod, integrationType: IntegrationType) {
     this.withProperty('Integration', Match.objectLike({
       IntegrationHttpMethod: method,
-      Type: type,
+      Type: integrationType,
     }));
     return this;
   }
@@ -229,7 +229,7 @@ export class ApiGatewayResource extends Resource {
    * @returns 
    */
   public ofApi(api: ApiGatewayRestApi) {
-    this.withProperty('RestApiId', api.ref);
+    this.withProperty('RestApiId', api.reference);
     return this;
   }
 
@@ -242,7 +242,7 @@ export class ApiGatewayResource extends Resource {
     if (parent instanceof ApiGatewayRestApi) {
       this.withProperty('ParentId', parent.resourceId);
     } else {
-      this.withProperty('ParentId', parent.ref);
+      this.withProperty('ParentId', parent.reference);
     }
     return this;
   }
@@ -297,12 +297,12 @@ export class ApiGatewayDomain extends Resource {
 
   /**
    * Sets a matching Endpoint Type
-   * @param type The endpoint type to match
+   * @param endpointType The endpoint type to match
    * @returns 
    */
-  public withEndpointType(type: EndpointType) {
+  public withEndpointType(endpointType: EndpointType) {
     this.withProperty('EndpointConfiguration', Match.objectLike({
-      Types: Match.arrayEquals([type]),
+      Types: Match.arrayEquals([endpointType]),
     }));
     return this;
   }
@@ -338,7 +338,7 @@ export class ApiGatewayBasePathMapping extends Resource {
    * @returns 
    */
   public ofApi(api: ApiGatewayRestApi) {
-    this.withProperty('RestApiId', api.ref);
+    this.withProperty('RestApiId', api.reference);
     return this;
   }
 
@@ -348,7 +348,7 @@ export class ApiGatewayBasePathMapping extends Resource {
    * @returns 
    */
   public ofDomainName(domain: ApiGatewayDomain) {
-    this.withProperty('DomainName', domain.ref);
+    this.withProperty('DomainName', domain.reference);
     return this;
   }
 
@@ -358,7 +358,7 @@ export class ApiGatewayBasePathMapping extends Resource {
    * @returns 
    */
   public toStage(stage: ApiGatewayStage) {
-    this.withProperty('Stage', stage.ref);
+    this.withProperty('Stage', stage.reference);
     return this;
   }
 }
@@ -392,8 +392,8 @@ export class ApiGatewayApiKey extends Resource {
    */
   public forApiAndStage(api: ApiGatewayRestApi, stage: ApiGatewayStage) {
     this.stageKeys.push(Match.objectLike({
-      RestApiId: api.ref,
-      StageName: stage.ref,
+      RestApiId: api.reference,
+      StageName: stage.reference,
     }));
     this.withProperty('StageKeys', Match.arrayWith(this.stageKeys));
     return this;
@@ -417,7 +417,7 @@ export class ApiGatewayApiKey extends Resource {
    * @returns 
    */
   public withSecretValue(secret: Secret) {
-    return this.withValue(secret.ref);
+    return this.withValue(secret.reference);
   }
 }
 
@@ -440,8 +440,8 @@ export class ApiGatewayUsagePlan extends Resource {
    */
   public withApiStage(api: ApiGatewayRestApi, stage: ApiGatewayStage) {
     this.apiStages.push(Match.objectLike({
-      ApiId: api.ref,
-      Stage: stage.ref,
+      ApiId: api.reference,
+      Stage: stage.reference,
     }));
     this.withProperty('ApiStages', Match.arrayWith(this.apiStages));
     return this;
@@ -463,7 +463,7 @@ export class ApiGatewayUsagePlanKey extends Resource {
    * @returns 
    */
   public ofUsagePlan(plan: ApiGatewayUsagePlan) {
-    this.withProperty('UsagePlanId', plan.ref);
+    this.withProperty('UsagePlanId', plan.reference);
     return this;
   }
 
@@ -473,7 +473,7 @@ export class ApiGatewayUsagePlanKey extends Resource {
    * @returns 
    */
   public withApiKey(apiKey: ApiGatewayApiKey) {
-    this.withProperty('KeyId', apiKey.ref);
+    this.withProperty('KeyId', apiKey.reference);
     this.withProperty('KeyType', 'API_KEY');
     return this;
   }

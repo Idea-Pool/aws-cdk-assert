@@ -62,6 +62,7 @@ typings/
 
 dist
 docs
+ts_dist
 coverage
 junit.xml
 .vscode

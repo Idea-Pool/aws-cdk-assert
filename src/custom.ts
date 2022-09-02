@@ -13,20 +13,20 @@ export class CustomResource extends RemovableResource {
 
   /**
    * Sets a matching event handler for the custom resource
-   * @param event The matching event name (exact match)
+   * @param eventName The matching event name (exact match)
    * @param action The matching action name (exact match)
    * @param service The matching service name (exact match)
    * @param parameters Optional parameters of the custom resource
    * @returns 
    */
-  public withEventHandler(event: string, action: string, service: string, parameters?: any) {
+  public withEventHandler(eventName: string, action: string, service: string, parameters?: any) {
     const handler: any = {
       action, service,
     };
     if (parameters) {
       handler.parameters = Match.objectLike(parameters);
     }
-    this.withProperty(event, Match.serializedJson(Match.objectLike(handler)));
+    this.withProperty(eventName, Match.serializedJson(Match.objectLike(handler)));
     return this;
   }
 

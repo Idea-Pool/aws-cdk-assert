@@ -120,6 +120,7 @@ export class CloudFrontDistribution extends RemovableResource {
    * @returns 
    */
   public withOrigin(originConfig: {
+    [key: string]: any,
     protocolPolicy?: OriginProtocolPolicy,
     sslProtocol?: OriginSslPolicy,
     domain?: any,

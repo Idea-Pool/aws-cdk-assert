@@ -25,11 +25,11 @@ export class Resource {
   /**
    * @member The matching definition of the resource (including the Properties).
    */
-  protected definitionMatcher: Dict;
+  protected definitionMatcher?: Dict;
   /**
    * @member The matching key of the resource.
    */
-  protected key: string;
+  protected key?: string;
   /**
    * @member The matching dependency keys of the resource (DependsOn).
    */
@@ -39,8 +39,8 @@ export class Resource {
    */
   protected metadataMatcher: any;
 
-  constructor(type: string, template: AdvancedTemplate, props: any) {
-    this.type = type;
+  constructor(resourceType: string, template: AdvancedTemplate, props: any) {
+    this.type = resourceType;
     this.template = template;
     this.propertiesMatcher = props;
     this.dependencyMatcher = [];
@@ -198,7 +198,7 @@ export class Resource {
   /**
    * The matcher for the Ref of the resource.
    */
-  public get ref(): Matcher {
+  public get reference(): Matcher {
     return Match.objectEquals({
       Ref: this.id,
     });

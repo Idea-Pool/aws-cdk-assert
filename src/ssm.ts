@@ -15,15 +15,15 @@ export class SSMParameter extends RemovableResource {
   /**
    * Sets a matching type for the parameter
    * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ssm.ParameterType.html}
-   * @param type The parameter type
+   * @param parameterType The parameter type
    * @returns 
    */
-  public of(type: ParameterType) {
-    if (type === ParameterType.AWS_EC2_IMAGE_ID) {
+  public of(parameterType: ParameterType) {
+    if (parameterType === ParameterType.AWS_EC2_IMAGE_ID) {
       this.withProperty('DataType', ParameterDataType.AWS_EC2_IMAGE);
       this.withProperty('Type', ParameterType.STRING);
     } else {
-      this.withProperty('Type', type);
+      this.withProperty('Type', parameterType);
     }
     return this;
   }

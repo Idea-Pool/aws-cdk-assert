@@ -9,7 +9,7 @@ import { RemovableResource } from "./resource";
  * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3.CfnBucketPolicy.html}
  */
 export class S3BucketPolicy extends RemovableResource {
-  private s3Bucket: S3Bucket;
+  private s3Bucket?: S3Bucket;
 
   constructor(template: AdvancedTemplate, props?: any) {
     super(CfnBucketPolicy.CFN_RESOURCE_TYPE_NAME, template, props);
@@ -33,6 +33,9 @@ export class S3BucketPolicy extends RemovableResource {
    * @returns 
    */
   public withPublicAccess() {
+    if (!this.s3Bucket) {
+      throw new TypeError('S3 Bucket is not added, call .forBucker(s3Bucket)');
+    }
     this.withProperty('PolicyDocument', {
       Statement: Match.arrayWith([
         Match.objectLike({
@@ -49,6 +52,18 @@ export class S3BucketPolicy extends RemovableResource {
     });
     return this;
   }
+}
+
+export interface CorsOptions {
+  readonly methods?: string | string[];
+  readonly origins?: string | string[];
+}
+
+export interface WebSiteHostingOptions {
+  readonly redirectTo?: string;
+  readonly redirectProtocol?: string;
+  readonly indexDocument?: string;
+  readonly errorDocument?: string;
 }
 
 /**
@@ -75,12 +90,7 @@ export class S3Bucket extends RemovableResource {
    * @param options The website hosting options
    * @returns 
    */
-  public withWebsiteHosting(options: {
-    redirectTo?: string,
-    redirectProtocol?: string,
-    indexDocument?: string,
-    errorDocument?: string,
-  } = {}) {
+  public withWebsiteHosting(options: WebSiteHostingOptions = {}) {
     this.withProperty(
       'WebsiteConfiguration',
       options.redirectTo
@@ -103,10 +113,7 @@ export class S3Bucket extends RemovableResource {
    * @param options The CORS options
    * @returns 
    */
-  public withCorsEnabled(options: {
-    methods?: string | string[],
-    origins?: string | string[],
-  } = {}) {
+  public withCorsEnabled(options: CorsOptions = {}) {
     this.withProperty(
       'CorsConfiguration',
       {

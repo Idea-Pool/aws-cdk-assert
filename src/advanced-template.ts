@@ -36,7 +36,7 @@ export class AdvancedTemplate {
    * @param template The parsed template
    * @param region The region of the stack
    */
-  constructor(template: Template, region?: string) {
+  constructor(template: Template, region: string) {
     this.template = template;
     this.region = region;
   }
@@ -60,7 +60,7 @@ export class AdvancedTemplate {
    * @param region The region of the stack.
    * @returns
    */
-  public static fromJSON(template: Dict, region?: string): AdvancedTemplate {
+  public static fromJSON(template: Dict, region: string): AdvancedTemplate {
     return new AdvancedTemplate(Template.fromJSON(template), region);
   }
 
@@ -72,7 +72,7 @@ export class AdvancedTemplate {
    * @param region The region of the stack
    * @returns 
    */
-  public static fromString(template: string, region?: string): AdvancedTemplate {
+  public static fromString(template: string, region: string): AdvancedTemplate {
     return new AdvancedTemplate(Template.fromString(template), region);
   }
 
@@ -112,8 +112,8 @@ export class AdvancedTemplate {
    * Returns the Resources of type matching with the passed properties.
    * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Template.html#findwbrresourcestype-props}
    */
-  public findResources(type: string, props?: any): KeyAndProps {
-    return this.template.findResources(type, props);
+  public findResources(resourceType: string, props?: any): KeyAndProps {
+    return this.template.findResources(resourceType, props);
   }
 
   /**
@@ -152,24 +152,24 @@ export class AdvancedTemplate {
    * Checks if there is a Resource matching the passed definition.
    * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Template.html#haswbrresourcetype-props} 
    */
-  public hasResource(type: string, props: any): void {
-    this.template.hasResource(type, props);
+  public hasResource(resourceType: string, props: any): void {
+    this.template.hasResource(resourceType, props);
   }
 
   /**
    * Checks if there is a Resource matching the passed properties. 
    * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Template.html#haswbrresourcewbrpropertiestype-props}
    */
-  public hasResourceProperties(type: string, props: any): void {
-    this.template.hasResourceProperties(type, props);
+  public hasResourceProperties(resourceType: string, props: any): void {
+    this.template.hasResourceProperties(resourceType, props);
   }
 
   /**
    * Checks if the count of the Resources of type is the passed one.
    * @see {@link https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Template.html#resourcewbrcountwbristype-count} 
    */
-  public resourceCountIs(type: string, count: number): void {
-    this.template.resourceCountIs(type, count);
+  public resourceCountIs(resourceType: string, count: number): void {
+    this.template.resourceCountIs(resourceType, count);
   }
 
   /**
@@ -205,22 +205,22 @@ export class AdvancedTemplate {
 
   /**
    * Creates a general Resource test construct with the passed type and properties.
-   * @param type The CloudFormation resource type
+   * @param resourceType The CloudFormation resource type
    * @param props The properties of the expected test construct
    * @returns 
    */
-  public resource(type: string, props?: any): Resource {
-    return new Resource(type, this, props);
+  public resource(resourceType: string, props?: any): Resource {
+    return new Resource(resourceType, this, props);
   }
 
   /**
    * Creates a general RemovableResource test construct with the passed type and properties.
-   * @param type The CloudFormation resource type
+   * @param resourceType The CloudFormation resource type
    * @param props The properties of the expected test construct
    * @returns 
    */
-  public removableResource(type: string, props?: any): RemovableResource {
-    return new RemovableResource(type, this, props);
+  public removableResource(resourceType: string, props?: any): RemovableResource {
+    return new RemovableResource(resourceType, this, props);
   }
 
   /**

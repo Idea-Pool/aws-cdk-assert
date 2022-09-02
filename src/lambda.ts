@@ -137,11 +137,11 @@ export class LambdaPermission extends Resource {
 
   /**
    * Sets a matching Lambda Function for the resource
-   * @param lambda The lambda function resource.
+   * @param lambdaFunction The lambda function resource.
    * @returns 
    */
-  public withFunctionName(lambda: LambdaFunction) {
-    this.withProperty('FunctionName', lambda.ref);
+  public withFunctionName(lambdaFunction: LambdaFunction) {
+    this.withProperty('FunctionName', lambdaFunction.reference);
     return this;
   }
 }

@@ -4,3 +4,9 @@
 *.log
 /test
 package-lock.json
+
+# Exclude jsii outdir
+dist
+
+# Include .jsii
+!.jsii

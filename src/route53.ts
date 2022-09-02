@@ -88,7 +88,7 @@ export class Route53RecordSet extends RemovableResource {
   */
   public inHostedZone(zone: Route53HostedZone | Matcher) {
     if (zone instanceof Route53HostedZone) {
-      this.withProperty('HostedZoneId', zone.ref);
+      this.withProperty('HostedZoneId', zone.reference);
     } else {
       this.withProperty('HostedZoneId', zone);
     }

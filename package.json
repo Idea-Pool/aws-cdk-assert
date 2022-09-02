@@ -2,10 +2,13 @@
   "name": "aws-cdk-assert",
   "version": "1.1.0",
   "description": "This tool gives handy utilities to test AWS CDK Stack.",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "ts_dist/index.js",
+  "types": "ts_dist/index.d.ts",
   "scripts": {
-    "build": "npm run buildUpdate && npm test && npm run typedoc",
+    "build": "jsii",
+    "build:watch": "jsii --watch",
+    "package": "jsii-pacmak",
+    "_build": "npm run buildUpdate && npm test && npm run typedoc",
     "buildUpdate": "npm run clean && npm run compile && npm run copyToDist",
     "copyToDist": "copyfiles -f *.md package.json dist",
     "typedoc": "typedoc",
@@ -23,7 +26,10 @@
     "cdk",
     "assert"
   ],
-  "author": "Idea Pool",
+  "author": {
+    "name": "Idea Pool",
+    "email": "ideapool@epam.com"
+  },
   "contributors": [
     "Laszlo Szikszai <sziklaszlo@gmail.com>"
   ],
@@ -51,16 +57,16 @@
     "eslint": "^7.19.0",
     "jest": "^26.6.3",
     "jest-junit": "^13.0.0",
+    "jsii": "^1.60.1",
+    "jsii-pacmak": "^1.60.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.5.1",
     "typedoc": "^0.22.12",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "tslib": "^2.3.1"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^2.13.0"
-  },
-  "dependencies": {
-    "tslib": "^2.3.1"
   },
   "jest": {
     "reporters": [
@@ -92,6 +98,21 @@
         "functions": 85,
         "lines": 85,
         "statements": 85
+      }
+    }
+  },
+  "stability": "stable",
+  "jsii": {
+    "outdir": "dist",
+    "tsc": {
+      "rootDir": "./src",
+      "outDir": "./ts_dist"
+    },
+    "versionFormat": "short",
+    "targets": {
+      "python": {
+        "distName": "community.ideapool.aws-cdk-assert",
+        "module": "aws-cdk-assert"
       }
     }
   }

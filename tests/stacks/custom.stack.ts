@@ -19,7 +19,7 @@ export class TestCustomStack extends Stack {
         parameters: {
           Name: 'CustomParameter',
         },
-        region: props.env.region,
+        region: props.env?.region,
         physicalResourceId: PhysicalResourceId.of('CustomParameter'),
       },
       onUpdate: {
@@ -28,7 +28,7 @@ export class TestCustomStack extends Stack {
         parameters: {
           Name: 'CustomParameter',
         },
-        region: props.env.region,
+        region: props.env?.region,
         physicalResourceId: PhysicalResourceId.of('CustomParameter'),
       },
     });
