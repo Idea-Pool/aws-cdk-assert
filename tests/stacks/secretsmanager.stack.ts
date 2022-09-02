@@ -1,4 +1,4 @@
-import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import { RemovalPolicy, SecretValue, Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
 
@@ -10,7 +10,7 @@ export class TestSecretsManagerStack extends Stack {
 
     new secretsmanager.Secret(this, 'SecretString', {
       secretName: 'secret-string',
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromUnsafePlaintext('TOP SECRET'),
+      secretStringValue: SecretValue.unsafePlainText('TOP SECRET'),
       removalPolicy: RemovalPolicy.SNAPSHOT,
     });
 

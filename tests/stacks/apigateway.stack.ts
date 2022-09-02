@@ -1,10 +1,10 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { SecretValue, Stack, StackProps } from "aws-cdk-lib";
 import { EndpointType, LambdaIntegration, LogGroupLogDestination, RestApi, SecurityPolicy } from "aws-cdk-lib/aws-apigateway";
 import { DnsValidatedCertificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { HostedZone } from "aws-cdk-lib/aws-route53";
-import { Secret, SecretStringValueBeta1 } from "aws-cdk-lib/aws-secretsmanager";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 
 export class TestAPIGatewayStack extends Stack {
@@ -60,7 +60,7 @@ export class TestAPIGatewayStack extends Stack {
 
     const secret = new Secret(this, id + 'SecretKey', {
       secretName: 'api-key',
-      secretStringBeta1: SecretStringValueBeta1.fromUnsafePlaintext('TOP SECRET'),
+      secretStringValue: SecretValue.unsafePlainText('TOP SECRET'),
     });
 
     // API KEY

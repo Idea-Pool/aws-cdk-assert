@@ -60,7 +60,9 @@ describe("IAM", () => {
       .usedByRole(roleForLambda)
       .withStatement(
         'lambda:InvokeFunction',
-        fn.arn,
+        Match.arrayWith([
+          fn.arn,
+        ]),
         Effect.ALLOW
       )
       .withStatement(
@@ -75,7 +77,11 @@ describe("IAM", () => {
     template
       .iamPolicy()
       .usedByRole(roleForCodeBuild)
-      .withStatement('lambda:InvokeFunction', fn.arn)
+      .withStatement(
+        'lambda:InvokeFunction', Match.arrayWith([
+          fn.arn,
+        ])
+      )
       .exists();
   });
 });

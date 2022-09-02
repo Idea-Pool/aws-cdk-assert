@@ -23,7 +23,7 @@ describe("API Gateway", () => {
     });
     template = AdvancedTemplate.fromStack(stack);
 
-    template.debug();
+    // template.debug();
 
     api = template
       .apiGatewayRestApi()
